@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astha P. Shukla | Backend and Integration Engineer</title>
+<meta name="description" content="Freelance backend and integration engineer. Two-way syncs between Shopify, WooCommerce, HubSpot, Dynamics 365 and Business Central, with OAuth 2.0 and JWT done right.">
+<meta name="theme-color" content="#080B1F">
+<meta property="og:title" content="Astha P. Shukla | Backend and Integration Engineer">
+<meta property="og:description" content="I make your business tools talk to each other. Reliable syncs between Shopify, WooCommerce, HubSpot, Dynamics 365 and more.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080B1F'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%235CE1FF'/%3E%3Ccircle cx='14' cy='18' r='4' fill='%238B6BFF'/%3E%3Ccircle cx='50' cy='46' r='4' fill='%23FFC857'/%3E%3Cpath d='M14 18L32 32L50 46' stroke='%232A3170' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --void: #080B1F;
+    --panel: #11163A;
+    --panel-2: #181F4D;
+    --line: #2A3170;
+    --text: #E8ECFF;
+    --muted: #9AA3D6;
+    --cyan: #5CE1FF;
+    --violet: #8B6BFF;
+    --amber: #FFC857;
+    --coral: #FF6B5E;
+    --display: "Sora", "Segoe UI", system-ui, sans-serif;
+    --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img, svg, canvas { max-width: 100%; }
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+
+  .wrap { width: min(1120px, 100% - 48px); margin-inline: auto; }
+
+  /* ---------- Header ---------- */
+  .top {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(8, 11, 31, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(42, 49, 112, 0.6);
+  }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font-family: var(--display); font-weight: 600; text-decoration: none; letter-spacing: -0.01em; }
+  .nav { display: flex; align-items: center; gap: 28px; }
+  .nav a { text-decoration: none; color: var(--muted); font-size: 0.95rem; transition: color .2s; }
+  .nav a:hover { color: var(--text); }
+  .nav .btn { color: #04132a; }
+  .nav .btn:hover { color: #04132a; }
+  @media (max-width: 720px) { .nav a:not(.btn) { display: none; } }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-block; text-decoration: none; cursor: pointer;
+    font-family: var(--body); font-weight: 600; font-size: 0.95rem;
+    padding: 12px 20px; border-radius: 10px;
+    background: var(--cyan); color: #04132a; border: 1px solid var(--cyan);
+    transition: background .2s, transform .2s;
+  }
+  .btn:hover { background: #8aeaff; }
+  .btn:active { transform: translateY(1px); }
+  .btn.ghost { background: transparent; color: var(--text); border-color: var(--line); }
+  .btn.ghost:hover { background: var(--panel); border-color: var(--muted); }
+  .btn.small { padding: 8px 16px; font-size: 0.9rem; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden;
+    padding: 72px 0 88px;
+    background:
+      radial-gradient(ellipse 60% 55% at 78% 42%, rgba(139, 107, 255, 0.22), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 20% 0%, rgba(92, 225, 255, 0.10), transparent 70%);
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(92, 225, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(92, 225, 255, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 60% 40%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 70% at 60% 40%, #000 20%, transparent 75%);
+  }
+  .hero .wrap { position: relative; display: grid; gap: 48px; align-items: center; }
+  @media (min-width: 960px) { .hero .wrap { grid-template-columns: 5fr 7fr; } }
+
+  .status { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.95rem; margin: 0 0 22px; }
+  .status i { width: 9px; height: 9px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.18); }
+  h1 {
+    font-family: var(--display); font-weight: 600; letter-spacing: -0.03em;
+    font-size: clamp(2.3rem, 5.2vw, 3.7rem); line-height: 1.04; margin: 0 0 22px;
+  }
+  .lede { color: var(--muted); max-width: 34rem; margin: 0 0 32px; font-size: 1.125rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .net-box { position: relative; }
+  #net {
+    display: block; width: 100%; aspect-ratio: 1.12 / 1; min-height: 320px;
+    border: 1px solid var(--line); border-radius: 18px;
+    background: linear-gradient(160deg, rgba(17, 22, 58, 0.85), rgba(8, 11, 31, 0.6));
+    touch-action: manipulation;
+  }
+  .net-info { min-height: 3.2em; margin: 14px 4px 0; color: var(--muted); font-size: 0.95rem; }
+  .net-info strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- Sections ---------- */
+  .sec { padding: 88px 0; }
+  .sec + .sec { border-top: 1px solid rgba(42, 49, 112, 0.55); }
+  h2 {
+    font-family: var(--display); font-weight: 600; letter-spacing: -0.025em;
+    font-size: clamp(1.7rem, 3.2vw, 2.35rem); line-height: 1.12; margin: 0 0 14px;
+  }
+  .sec-intro { color: var(--muted); max-width: 38rem; margin: 0 0 44px; }
+
+  /* Results */
+  .results { display: grid; gap: 28px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .results { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .results { grid-template-columns: repeat(4, 1fr); } }
+  .result { border-left: 2px solid var(--line); padding-left: 18px; }
+  .result b { display: block; font-family: var(--display); font-weight: 600; font-size: 1.45rem; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .result span { color: var(--muted); font-size: 0.98rem; }
+
+  /* Services */
+  .services { border-top: 1px solid var(--line); }
+  details { border-bottom: 1px solid var(--line); }
+  summary {
+    list-style: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 24px 4px;
+    font-family: var(--display); font-weight: 600; font-size: clamp(1.15rem, 2.2vw, 1.45rem); letter-spacing: -0.015em;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+"; flex: none; width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center; font-family: var(--body); font-weight: 400; font-size: 1.4rem; line-height: 1;
+    border: 1px solid var(--line); color: var(--cyan);
+    transition: transform .25s, background .2s;
+  }
+  details[open] summary::after { transform: rotate(45deg); background: var(--panel); }
+  summary:hover::after { background: var(--panel); }
+  .svc-body { padding: 0 4px 28px; max-width: 46rem; color: var(--muted); }
+  .svc-body p { margin: 0 0 12px; }
+  .svc-body ul { margin: 0; padding-left: 1.2rem; }
+  .svc-body li { margin-bottom: 4px; }
+
+  /* Project */
+  .project {
+    display: grid; gap: 32px; padding: 32px;
+    background: linear-gradient(160deg, var(--panel), rgba(17, 22, 58, 0.4));
+    border: 1px solid var(--line); border-radius: 18px;
+  }
+  @media (min-width: 900px) { .project { grid-template-columns: 6fr 5fr; padding: 40px; gap: 48px; } }
+  .project h3 { font-family: var(--display); font-weight: 600; font-size: 1.5rem; letter-spacing: -0.02em; margin: 0 0 12px; }
+  .project p { color: var(--muted); margin: 0 0 16px; }
+  .facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; align-content: start; }
+  .facts li { padding-left: 18px; position: relative; color: var(--text); font-size: 0.98rem; }
+  .facts li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 26px; padding: 0; list-style: none; }
+  .tags li { font-size: 0.85rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+  .more { color: var(--muted); margin: 26px 0 0; }
+  .minis { display: grid; gap: 24px; margin-top: 24px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .minis { grid-template-columns: 1fr 1fr; } }
+  .mini { display: flex; flex-direction: column; padding: 28px; background: linear-gradient(160deg, var(--panel), rgba(17, 22, 58, 0.4)); border: 1px solid var(--line); border-radius: 18px; }
+  .mini h3 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.02em; margin: 0 0 10px; }
+  .mini p { color: var(--muted); margin: 0 0 14px; }
+  .mini .facts { margin-bottom: 4px; }
+  .mini .tags { margin: 18px 0 22px; }
+  .mini .btn { align-self: flex-start; margin-top: auto; }
+
+  /* Process */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; counter-reset: s; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .steps { grid-template-columns: repeat(4, 1fr); } }
+  .steps li { counter-increment: s; border-top: 2px solid var(--line); padding-top: 18px; }
+  .steps li::before { content: counter(s); display: block; font-family: var(--display); font-weight: 600; color: var(--cyan); margin-bottom: 8px; }
+  .steps b { display: block; font-family: var(--display); font-weight: 600; font-size: 1.1rem; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .steps span { color: var(--muted); font-size: 0.98rem; }
+
+  /* Stack */
+  .stack { display: grid; gap: 22px 40px; grid-template-columns: 1fr; margin: 0; }
+  @media (min-width: 720px) { .stack { grid-template-columns: 1fr 1fr; } }
+  .stack div { border-top: 1px solid var(--line); padding-top: 14px; }
+  .stack dt { font-family: var(--display); font-weight: 600; margin-bottom: 4px; }
+  .stack dd { margin: 0; color: var(--muted); }
+
+  /* Contact */
+  .contact { padding: 96px 0 72px; background: radial-gradient(ellipse 55% 70% at 15% 100%, rgba(92, 225, 255, 0.10), transparent 70%); }
+  .contact h2 { font-size: clamp(2rem, 4.4vw, 3.1rem); max-width: 20ch; }
+  .contact p { color: var(--muted); max-width: 36rem; margin: 0 0 30px; }
+  .links { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 34px; }
+  .links a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; transition: color .2s, border-color .2s; }
+  .links a:hover { color: var(--text); border-color: var(--cyan); }
+  footer { border-top: 1px solid rgba(42, 49, 112, 0.55); padding: 24px 0 40px; color: var(--muted); font-size: 0.9rem; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Hero extras ---------- */
+  .hero-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 40px 0 0; padding-top: 24px; border-top: 1px solid var(--line); }
+  .hero-facts dt { font-family: var(--display); font-weight: 600; font-size: 1rem; margin: 0 0 2px; letter-spacing: -0.01em; }
+  .hero-facts dd { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.35; }
+  @media (max-width: 420px) { .hero-facts { gap: 10px; } .hero-facts dt { font-size: 0.9rem; } .hero-facts dd { font-size: 0.78rem; } }
+
+  /* ---------- Shared demo bits ---------- */
+  .sub { font-family: var(--display); font-weight: 600; font-size: clamp(1.25rem, 2.4vw, 1.6rem); letter-spacing: -0.02em; margin: 64px 0 8px; }
+  .sub + p { color: var(--muted); margin: 0 0 24px; max-width: 42rem; }
+  .panel { background: linear-gradient(160deg, var(--panel), rgba(17, 22, 58, 0.45)); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  pre.code { margin: 0 0 14px; padding: 14px; background: rgba(8, 11, 31, 0.75); border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; font: 0.82rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; color: #cfd6ff; white-space: pre; }
+  select { font: inherit; font-size: 0.92rem; color: var(--text); background: var(--void); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-height: 40px; }
+  select:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* ---------- Two-way sync demo ---------- */
+  .sync { display: grid; gap: 0; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 900px) { .sync { grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr) 64px minmax(0, 1fr); } }
+  .sys, .engine { background: linear-gradient(160deg, var(--panel), rgba(17, 22, 58, 0.45)); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+  .sys[data-side="store"] { border-top: 3px solid var(--cyan); }
+  .sys[data-side="crm"] { border-top: 3px solid var(--amber); }
+  .engine { border-top: 3px solid var(--violet); display: flex; flex-direction: column; gap: 16px; }
+  .sys header, .engine header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+  .engine header { margin-bottom: 0; }
+  .sys h3, .engine h3 { font-family: var(--display); font-size: 1.05rem; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  .sys .brand { color: var(--muted); font-size: 0.85rem; }
+  .state { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); }
+  .state i { width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; }
+  .state.down i { background: var(--coral); }
+  .state.down { color: var(--coral); }
+  .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .rows li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 10px; background: rgba(8, 11, 31, 0.5); border: 1px solid rgba(42, 49, 112, 0.7); }
+  .rows .who { font-size: 0.95rem; }
+  @keyframes flashCyan { 0% { background: rgba(92, 225, 255, 0.4); } 100% { background: rgba(8, 11, 31, 0.5); } }
+  @keyframes flashAmber { 0% { background: rgba(255, 200, 87, 0.4); } 100% { background: rgba(8, 11, 31, 0.5); } }
+  @keyframes flashViolet { 0% { background: rgba(139, 107, 255, 0.5); } 100% { background: rgba(8, 11, 31, 0.5); } }
+  .flash-cyan { animation: flashCyan 1.3s ease-out; }
+  .flash-amber { animation: flashAmber 1.3s ease-out; }
+  .flash-violet { animation: flashViolet 1.3s ease-out; }
+
+  .link { position: relative; min-height: 40px; }
+  .link::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--line); transform: translateX(-50%); }
+  @media (min-width: 900px) { .link::before { left: 0; right: 0; top: 50%; bottom: auto; width: auto; height: 2px; transform: translateY(-50%); } }
+  .pkt { position: absolute; left: 50%; top: 0; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  @media (min-width: 900px) { .pkt { top: 50%; left: 0; } }
+  .pkt.cyan { background: var(--cyan); box-shadow: 0 0 14px var(--cyan); }
+  .pkt.amber { background: var(--amber); box-shadow: 0 0 14px var(--amber); }
+  .pkt.violet { background: var(--violet); box-shadow: 0 0 14px var(--violet); }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat { background: rgba(8, 11, 31, 0.5); border: 1px solid rgba(42, 49, 112, 0.7); border-radius: 10px; padding: 8px 10px; }
+  .stat b { display: block; font-family: var(--display); font-size: 1.3rem; line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: 0.78rem; line-height: 1.2; display: block; }
+  .mini-h { margin: 0 0 8px; color: var(--muted); font-size: 0.85rem; }
+  .queue { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.88rem; min-height: 3.4em; align-content: start; }
+  .queue li { padding: 6px 10px; border-radius: 8px; border: 1px dashed var(--line); color: var(--text); }
+  .queue li.try { border-color: var(--coral); }
+  .queue li.try em { color: var(--coral); font-style: normal; }
+  .queue li.empty { border-style: solid; border-color: transparent; color: var(--muted); padding-left: 0; }
+
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 22px 0 14px; }
+  .controls label { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.92rem; }
+  .btn[aria-pressed="true"] { background: rgba(255, 107, 94, 0.14); border-color: var(--coral); color: var(--text); }
+
+  .log { list-style: none; margin: 0; padding: 6px; max-height: 270px; overflow: auto; background: rgba(8, 11, 31, 0.6); border: 1px solid var(--line); border-radius: 14px; font-size: 0.9rem; }
+  .log li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border-radius: 8px; }
+  .log li::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 0.55em; background: var(--muted); }
+  .log li.ok::before { background: #4ADE80; }
+  .log li.conflict::before { background: var(--amber); }
+  .log li.error::before { background: var(--coral); }
+  .log li.echo::before { background: var(--violet); }
+  .log time { flex: none; color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; padding-top: 2px; }
+
+  /* ---------- OAuth vs JWT ---------- */
+  .vs { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 800px) { .vs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+  .vs h3 { font-family: var(--display); font-weight: 600; font-size: 1.2rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .vs .kicker { color: var(--cyan); font-size: 0.9rem; margin: 0 0 12px; }
+  .vs dl { margin: 0; display: grid; gap: 10px; }
+  .vs dt { font-weight: 600; font-size: 0.92rem; }
+  .vs dd { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .fit { margin: 18px 0 0; color: var(--muted); max-width: 46rem; }
+  .fit strong { color: var(--text); font-weight: 600; }
+
+  .oauth { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 960px) { .oauth { grid-template-columns: minmax(0, 5fr) minmax(0, 4fr); align-items: start; } }
+  .oa { padding: 16px 12px; background: var(--panel); }
+  .oa-actors, .oa-body { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .oa-actors div { text-align: center; padding: 0 2px; }
+  .oa-actors b { display: block; font-family: var(--display); font-size: 0.88rem; }
+  .oa-actors span { display: block; color: var(--muted); font-size: 0.72rem; line-height: 1.25; }
+  .oa-body { margin-top: 12px; padding: 6px 0;
+    background:
+      linear-gradient(var(--line), var(--line)) 12.5% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) 37.5% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) 62.5% 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) 87.5% 0 / 1px 100% no-repeat; }
+  .msg { padding: 7px 0; opacity: 0.2; color: var(--muted); transition: opacity 0.3s, color 0.3s; }
+  .msg.past { opacity: 0.6; }
+  .msg.now { opacity: 1; color: var(--cyan); }
+  .msg .lbl { display: block; text-align: center; font-size: 0.76rem; line-height: 1.25; padding: 0 4px 6px; color: var(--text); }
+  .msg .lbl span { background: var(--panel); padding: 0 4px; border-radius: 4px; }
+  .msg .ln { height: 2px; background: currentColor; margin: 0 calc(50% / var(--n)); position: relative; }
+  .msg .ln::after { content: ""; position: absolute; top: -4px; right: -1px; border: 5px solid transparent; border-left: 8px solid currentColor; border-right: 0; }
+  .msg.rtl .ln::after { right: auto; left: -1px; border-left: 0; border-right: 8px solid currentColor; }
+
+  .oa-steps { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .oa-steps button { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--muted); font: 600 0.95rem var(--display); cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .oa-steps button.done { color: var(--cyan); border-color: var(--cyan); }
+  .oa-steps button[aria-current="step"] { background: var(--cyan); color: #04132a; border-color: var(--cyan); }
+  .oa-detail h4 { font-family: var(--display); font-size: 1.25rem; letter-spacing: -0.01em; margin: 0 0 8px; }
+  .oa-detail p { color: var(--muted); margin: 0 0 14px; }
+  .oa-detail p.safe { border-left: 2px solid var(--cyan); padding-left: 14px; color: var(--text); }
+  .oa-nav { display: flex; gap: 10px; margin-top: 16px; }
+  .oa-foot { color: var(--muted); font-size: 0.92rem; margin: 18px 0 0; max-width: 46rem; }
+  .oa-foot a { color: var(--text); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .jwt { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+  .jwt-str { display: block; font: 0.9rem/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; word-break: break-all; padding: 16px; background: rgba(8, 11, 31, 0.75); border: 1px solid var(--line); border-radius: 12px; }
+  .t-h { color: #B7A8FF; }
+  .t-p { color: var(--cyan); }
+  .t-s { color: var(--amber); }
+  .t-changed { outline: 2px solid var(--coral); outline-offset: 2px; border-radius: 3px; }
+  .jwt-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.85rem; color: var(--muted); margin: 12px 0 16px; }
+  .jwt-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+  .jwt-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .jwt-decoded { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 720px) { .jwt-decoded { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+  .jwt-decoded h4 { font-family: var(--display); font-size: 0.95rem; margin: 0 0 8px; color: var(--muted); font-weight: 600; }
+  .jwt-decoded pre.code { margin: 0; }
+  .jwt-decoded mark { background: rgba(255, 107, 94, 0.22); color: #ffb3ab; border-radius: 3px; padding: 0 2px; }
+  .jwt-meta { color: var(--muted); font-size: 0.88rem; margin: 8px 0 0; }
+  .verdict { padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); }
+  .verdict.ok { border-color: #4ADE80; background: rgba(74, 222, 128, 0.08); }
+  .verdict.bad { border-color: var(--coral); background: rgba(255, 107, 94, 0.08); }
+  .verdict .head { font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin: 0; }
+  .checks { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; color: var(--muted); font-size: 0.95rem; }
+  .checks li::before { content: attr(data-s); display: inline-block; min-width: 3.4em; font-weight: 600; margin-right: 8px; }
+  .checks li.pass::before { color: #4ADE80; }
+  .checks li.fail::before { color: var(--coral); }
+  .jwt-note { color: var(--muted); font-size: 0.92rem; margin: 0; max-width: 46rem; }
+  .jwt-note strong { color: var(--text); font-weight: 600; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">Astha P. Shukla</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#sync">Live sync</a>
+      <a href="#auth">Auth</a>
+      <a href="#services">Services</a>
+      <a href="#work">Projects</a>
+      <a class="btn small" href="#contact">Hire me</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="status"><i aria-hidden="true"></i>Available for freelance projects</p>
+        <h1>I make your business tools talk to each other.</h1>
+        <p class="lede">I'm a backend and integration engineer. I build two-way syncs between Shopify, WooCommerce, HubSpot, Dynamics 365 and Business Central, with secure sign-in and retries that fix failures on their own.</p>
+        <div class="actions">
+          <a class="btn" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Start a project</a>
+          <a class="btn ghost" href="#sync">Try the live demos</a>
+        </div>
+        <dl class="hero-facts">
+          <div><dt>4.8 years</dt><dd>building production integrations</dd></div>
+          <div><dt>Two-way sync</dt><dd>with conflict handling</dd></div>
+          <div><dt>OAuth 2.0 + JWT</dt><dd>secure by design</dd></div>
+        </dl>
+      </div>
+
+      <div class="net-box">
+        <canvas id="net" role="img" aria-label="Animated diagram. Data flows both ways between stores (Shopify, WooCommerce) and business systems (HubSpot, Dynamics 365, Business Central) through a queue. A failed delivery pauses and retries on its own."></canvas>
+        <p class="net-info" id="net-info" aria-live="polite"><strong>Simulation.</strong> Data flows both ways through a queue: cyan dots start on the store side, amber dots on the CRM and ERP side. If an app is down, the delivery waits and retries on its own. Select a node to see what I connect.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="results">
+    <div class="wrap">
+      <h2>Results from 4.8 years of production work</h2>
+      <p class="sec-intro">Integrations that run unattended are what I'm good at. These are outcomes from systems I built and maintained.</p>
+      <div class="results">
+        <div class="result"><b>1-2 min to 2-3 s</b><span>Dashboard API response time after caching work</span></div>
+        <div class="result"><b>5 parallel workers</b><span>Used to sync large, variant-heavy product catalogs</span></div>
+        <div class="result"><b>Automatic retries</b><span>Failed workflows retry with backoff, then alert the owner</span></div>
+        <div class="result"><b>Anomaly alerts</b><span>Monitoring that flags unusual drops or spikes in sync volume</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="sync">
+    <div class="wrap">
+      <h2>Two-way sync, live</h2>
+      <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. This runs for real in your browser, so try to break it.</p>
+
+      <div class="sync" id="sync-app">
+        <div class="sys" data-side="store">
+          <header>
+            <div><h3>Online store</h3><span class="brand">Shopify</span></div>
+            <span class="state" id="state-store"><i></i><span>Online</span></span>
+          </header>
+          <ul class="rows" id="rows-store"></ul>
+        </div>
+
+        <div class="link" id="link-l" aria-hidden="true"></div>
+
+        <div class="engine">
+          <header><h3>Sync engine</h3></header>
+          <div class="stats">
+            <div class="stat"><b data-stat="synced">0</b><span>changes synced</span></div>
+            <div class="stat"><b data-stat="echoes">0</b><span>echoes ignored (no loops)</span></div>
+            <div class="stat"><b data-stat="conflicts">0</b><span>conflicts settled</span></div>
+            <div class="stat"><b data-stat="retries">0</b><span>automatic retries</span></div>
+          </div>
+          <div>
+            <p class="mini-h">Waiting to be delivered</p>
+            <ul class="queue" id="sync-queue"></ul>
+          </div>
+        </div>
+
+        <div class="link" id="link-r" aria-hidden="true"></div>
+
+        <div class="sys" data-side="crm">
+          <header>
+            <div><h3>CRM</h3><span class="brand">HubSpot</span></div>
+            <span class="state" id="state-crm"><i></i><span>Online</span></span>
+          </header>
+          <ul class="rows" id="rows-crm"></ul>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn ghost small" id="btn-conflict" type="button">Force a conflict</button>
+        <button class="btn ghost small" id="btn-outage" type="button" aria-pressed="false">Simulate CRM outage</button>
+        <label>If both sides change:
+          <select id="policy">
+            <option value="newest">newest change wins</option>
+            <option value="store">store always wins</option>
+            <option value="crm">CRM always wins</option>
+          </select>
+        </label>
+        <button class="btn ghost small" id="btn-reset" type="button">Reset</button>
+      </div>
+      <ul class="log" id="sync-log" role="log" aria-live="polite" aria-label="Sync activity log"></ul>
+    </div>
+  </section>
+
+  <section class="sec" id="auth">
+    <div class="wrap">
+      <h2>Secure sign-in, explained</h2>
+      <p class="sec-intro">Two terms get mixed up all the time. OAuth 2.0 is the process that lets one app act for you without ever seeing your password. A JWT is a signed token that proves who you are and what you're allowed to do. I use both in production integrations.</p>
+
+      <div class="vs">
+        <div class="panel">
+          <h3>OAuth 2.0</h3>
+          <p class="kicker">The permission process</p>
+          <dl>
+            <div><dt>Answers</dt><dd>May this app access my data, and which parts?</dd></div>
+            <div><dt>You see it as</dt><dd>“Connect with HubSpot” or “Sign in with Microsoft”</dd></div>
+            <div><dt>The app receives</dt><dd>A short-lived access token and a longer-lived refresh token</dd></div>
+          </dl>
+        </div>
+        <div class="panel">
+          <h3>JWT</h3>
+          <p class="kicker">A signed token</p>
+          <dl>
+            <div><dt>Answers</dt><dd>Is this token genuine, and what does it say about the caller?</dd></div>
+            <div><dt>You see it as</dt><dd>Three dotted parts: header.payload.signature</dd></div>
+            <div><dt>The API checks</dt><dd>The signature, the expiry time, and who it was issued for</dd></div>
+          </dl>
+        </div>
+      </div>
+      <p class="fit"><strong>How they fit together:</strong> OAuth 2.0 is how an app gets a token. The token is often a JWT. The API then checks the JWT's signature and expiry on every request.</p>
+
+      <h3 class="sub">OAuth 2.0: connecting an account, step by step</h3>
+      <p>The authorization code flow, the standard way to let an app connect to HubSpot, Microsoft or Shopify. Step through it and watch what is sent and why it is safe.</p>
+      <div class="oauth">
+        <div class="oa panel" aria-label="Sequence diagram of the OAuth 2.0 authorization code flow">
+          <div class="oa-actors">
+            <div><b>You</b><span>your browser</span></div>
+            <div><b>My app</b><span>my server</span></div>
+            <div><b>Auth server</b><span>the login page</span></div>
+            <div><b>API</b><span>the data</span></div>
+          </div>
+          <div class="oa-body" id="oa-body"></div>
+        </div>
+        <div class="oa-detail">
+          <div class="oa-steps" id="oa-steps" role="group" aria-label="Choose a step"></div>
+          <h4 id="oa-title"></h4>
+          <p id="oa-text"></p>
+          <pre class="code" id="oa-code" tabindex="0"></pre>
+          <p class="safe" id="oa-safe"></p>
+          <div class="oa-nav">
+            <button class="btn ghost small" id="oa-prev" type="button">Back</button>
+            <button class="btn small" id="oa-next" type="button">Next step</button>
+            <button class="btn ghost small" id="oa-play" type="button">Play</button>
+          </div>
+        </div>
+      </div>
+      <p class="oa-foot">See it in code: my <a href="https://github.com/asthapandey06/integration-starter-kit" target="_blank" rel="noopener">integration-starter-kit</a> implements this flow, plus encrypted token storage and a lock so only one refresh runs at a time. Not every provider supports PKCE yet. When one doesn't, the state check and the client secret kept on my server protect the flow.</p>
+
+      <h3 class="sub">JWT: why a token can be trusted</h3>
+      <p>This token is signed with a secret key that only the server knows. Try to cheat with it and watch the server reject you. The check is really computed in your browser.</p>
+      <div class="jwt" id="jwt">
+        <div class="panel">
+          <code class="jwt-str" id="jwt-str" aria-label="The JSON Web Token"></code>
+          <div class="jwt-legend">
+            <span><i style="background:#B7A8FF"></i>Header: how it's signed</span>
+            <span><i style="background:var(--cyan)"></i>Payload: who and what</span>
+            <span><i style="background:var(--amber)"></i>Signature: the proof</span>
+          </div>
+          <div class="jwt-actions">
+            <button class="btn ghost small" type="button" data-act="tamper">Tamper: make me admin</button>
+            <button class="btn ghost small" type="button" data-act="forge">Forge it with a guessed key</button>
+            <button class="btn ghost small" type="button" data-act="expire">Fast-forward 20 minutes</button>
+            <button class="btn ghost small" type="button" data-act="reset">Get a fresh token</button>
+          </div>
+        </div>
+        <div class="jwt-decoded">
+          <div><h4>Header (decoded)</h4><pre class="code" id="jwt-h" tabindex="0"></pre></div>
+          <div><h4>Payload (decoded)</h4><pre class="code" id="jwt-p" tabindex="0"></pre><p class="jwt-meta" id="jwt-meta"></p></div>
+        </div>
+        <div class="verdict" id="jwt-verdict" role="status" aria-live="polite">
+          <p class="head" id="jwt-head"></p>
+          <ul class="checks" id="jwt-checks"></ul>
+        </div>
+        <p class="jwt-note"><strong>Good to know:</strong> anyone can read a JWT's payload. It is encoded, not encrypted, so never put passwords or secrets in it. The signature is what stops changes. Real systems often use RS256, where a private key signs and a public key verifies, so APIs can check tokens without holding the signing secret.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="services">
+    <div class="wrap">
+      <h2>What I can build for you</h2>
+      <p class="sec-intro">Open a service to see what's included.</p>
+      <div class="services">
+        <details>
+          <summary>Connect the tools you already use</summary>
+          <div class="svc-body">
+            <p>Keep your store, CRM and ERP in step, so nobody copies data between systems by hand.</p>
+            <ul>
+              <li>Shopify and WooCommerce to HubSpot, Dynamics 365 or Business Central</li>
+              <li>One-way or two-way sync of orders, customers, products and stock</li>
+              <li>Duplicate protection and clear logs when something goes wrong</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>Backend APIs and automation</summary>
+          <div class="svc-body">
+            <p>Secure, documented back ends that handle heavy workloads without slowing down.</p>
+            <ul>
+              <li>REST and GraphQL APIs with login, validation and rate limiting</li>
+              <li>Webhooks and background jobs for slow or large tasks</li>
+              <li>Swagger documentation and Docker-based deployment</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>Online store and marketplace sync</summary>
+          <div class="svc-body">
+            <p>Publish products to other sales channels and keep stock accurate everywhere.</p>
+            <ul>
+              <li>Product, price and inventory updates across channels</li>
+              <li>Bulk processing for large catalogs</li>
+              <li>Order and stock updates in real time through webhooks</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>Business websites</summary>
+          <div class="svc-body">
+            <p>Fast, clean websites that connect to the systems you already run.</p>
+            <ul>
+              <li>Lead forms that go straight into your CRM</li>
+              <li>Mobile-friendly layouts and quick load times</li>
+              <li>Hosting setup and handover</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="work">
+    <div class="wrap">
+      <h2>Projects</h2>
+      <p class="sec-intro">Original demos built on free developer accounts and a built-in test store. Each one shows how I approach reliability, and each comes with automated tests.</p>
+      <article class="project">
+        <div>
+          <h3>Shopify to HubSpot order sync</h3>
+          <p>Every new Shopify order becomes a HubSpot contact and a closed-won deal, automatically. Store owners stop copying order data into their CRM by hand.</p>
+          <ul class="tags" aria-label="Technologies used">
+            <li>Node.js</li><li>TypeScript</li><li>BullMQ</li><li>Redis</li><li>Docker</li><li>HubSpot API</li>
+          </ul>
+          <a class="btn" href="https://github.com/asthapandey06/shopify-hubspot-sync" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+        <ul class="facts">
+          <li>Checks every webhook's signature, so only Shopify can trigger a sync</li>
+          <li>Replies to Shopify instantly and does the work in a queue</li>
+          <li>Ignores duplicate webhooks and never creates duplicate deals</li>
+          <li>Retries temporary errors with backoff and stops retrying bad data</li>
+        </ul>
+      </article>
+      <div class="minis">
+        <article class="mini">
+          <h3>Integration starter kit</h3>
+          <p>The plumbing every integration needs, done properly once: OAuth login, encrypted tokens, safe refreshes, retries and rate limits.</p>
+          <ul class="facts">
+            <li>Tokens encrypted at rest, with key rotation</li>
+            <li>Ten parallel requests cause exactly one token refresh</li>
+            <li>Refreshes once on a 401, backs off on 429 and 5xx</li>
+          </ul>
+          <ul class="tags" aria-label="Technologies used">
+            <li>Node.js</li><li>TypeScript</li><li>OAuth 2.0</li><li>Redis</li><li>AES-256-GCM</li>
+          </ul>
+          <a class="btn ghost" href="https://github.com/asthapandey06/integration-starter-kit" target="_blank" rel="noopener">View on GitHub</a>
+        </article>
+        <article class="mini">
+          <h3>Catalog sync for WooCommerce</h3>
+          <p>Upload a product CSV and watch it sync live. Bad rows are reported by line number, and re-running a file never creates duplicates.</p>
+          <ul class="facts">
+            <li>Validates every row and explains each problem</li>
+            <li>Chunks processed by parallel workers, one batch call per chunk</li>
+            <li>Creates new products and updates existing ones</li>
+          </ul>
+          <ul class="tags" aria-label="Technologies used">
+            <li>Node.js</li><li>TypeScript</li><li>BullMQ</li><li>Redis</li><li>WooCommerce API</li>
+          </ul>
+          <a class="btn ghost" href="https://github.com/asthapandey06/catalog-sync" target="_blank" rel="noopener">View on GitHub</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="process">
+    <div class="wrap">
+      <h2>How we'd work together</h2>
+      <p class="sec-intro">A clear scope and a fixed price, so you know what you're getting before work starts.</p>
+      <ol class="steps">
+        <li><b>Short call</b><span>You describe the problem and the tools involved. I ask the questions that matter.</span></li>
+        <li><b>Written proposal</b><span>Scope, timeline and a fixed price, in plain language.</span></li>
+        <li><b>Build and demo</b><span>You see working progress along the way, not just at the end.</span></li>
+        <li><b>Handover</b><span>Documentation, monitoring and alerts in place before I step away.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec" id="stack">
+    <div class="wrap">
+      <h2>Tools I use</h2>
+      <p class="sec-intro">Chosen for reliability, not novelty.</p>
+      <dl class="stack">
+        <div><dt>Languages and frameworks</dt><dd>TypeScript, Node.js, Express, PHP (Phalcon, Laravel)</dd></div>
+        <div><dt>Data and queues</dt><dd>PostgreSQL, MongoDB, Redis, BullMQ</dd></div>
+        <div><dt>APIs and security</dt><dd>REST, GraphQL, webhooks, OAuth 2.0, JWT, encrypted token storage</dd></div>
+        <div><dt>Platforms</dt><dd>HubSpot, Microsoft Dynamics 365, Business Central, Shopify, WooCommerce</dd></div>
+        <div><dt>Cloud and delivery</dt><dd>Docker, AWS (S3, SQS, DynamoDB), PM2, Git, GitHub</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <h2>Have systems that need to work together?</h2>
+      <p>Tell me which tools you use and what's slow or manual today. I'll reply with a plan and a price.</p>
+      <div class="actions">
+        <a class="btn" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Email me</a>
+        <a class="btn ghost" href="https://www.linkedin.com/in/astha-p-shukla-b398b2213" target="_blank" rel="noopener">Message on LinkedIn</a>
+      </div>
+      <div class="links">
+        <a href="mailto:astha.61097@gmail.com">astha.61097@gmail.com</a>
+        <a href="https://github.com/asthapandey06" target="_blank" rel="noopener">github.com/asthapandey06</a>
+        <a href="https://www.linkedin.com/in/astha-p-shukla-b398b2213" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">&copy; 2026 Astha P. Shukla. Based in Lucknow, India. Working with clients worldwide.</div>
+</footer>
+
+<script>
+(() => {
+  const canvas = document.getElementById('net');
+  const info = document.getElementById('net-info');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = getComputedStyle(document.documentElement);
+  const col = n => css.getPropertyValue(n).trim();
+  const C = {
+    panel: col('--panel'), line: col('--line'), text: col('--text'), muted: col('--muted'),
+    cyan: col('--cyan'), violet: col('--violet'), amber: col('--amber'), coral: col('--coral')
+  };
+  const FONT = '"Figtree", "Segoe UI", system-ui, sans-serif';
+  const DEFAULT_INFO = info.innerHTML;
+
+  const nodes = [
+    { label: 'Shopify',          role: 'l', a: 200, info: 'Orders, products and stock, picked up through webhooks and the Admin API.' },
+    { label: 'WooCommerce',      role: 'l', a: 160, info: 'Products, stock and orders, synced through its REST API and webhooks.' },
+    { label: 'HubSpot',          role: 'r', a: -20, info: 'Contacts, deals and custom CRM cards, kept in step with your other systems.' },
+    { label: 'Dynamics 365',     role: 'r', a: 20,  info: 'Two-way sync between your CRM and ERP data.' },
+    { label: 'Business Central', role: 'r', a: -90, info: 'Deals, products, companies and contacts moving to and from your CRM.' }
+  ];
+  const hub = { x: 0, y: 0, r: 36, pulse: 0 };
+  let W = 0, H = 0, packets = [], hover = null, spawnT = 0, last = 0, raf = 0, running = false;
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  function layout() {
+    hub.x = W / 2; hub.y = H / 2; hub.r = clamp(Math.min(W, H) * 0.095, 30, 44);
+    ctx.font = '600 13px ' + FONT;
+    const rx = W * 0.37, ry = H * 0.35;
+    nodes.forEach(n => {
+      const a = n.a * Math.PI / 180;
+      n.w = ctx.measureText(n.label).width + 30; n.h = 32;
+      n.x = clamp(hub.x + Math.cos(a) * rx, n.w / 2 + 10, W - n.w / 2 - 10);
+      n.y = hub.y + Math.sin(a) * ry;
+      n.glow = n.glow || 0;
+    });
+  }
+
+  function resize() {
+    const r = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    layout();
+    if (reduce) seedStatic();
+    draw();
+  }
+
+  function rr(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // Data flows both ways: a change starting on one side goes through the hub to the other side.
+  function spawnIn() {
+    const node = pick(nodes);
+    packets.push({ node, side: node.role, toHub: true, t: 0, speed: 0.5 + Math.random() * 0.15, stall: 0 });
+  }
+  function spawnOut(side) {
+    const count = Math.random() < 0.5 ? 1 : 2;
+    const pool = nodes.filter(n => n.role !== side).sort(() => Math.random() - 0.5).slice(0, count);
+    pool.forEach(n => packets.push({
+      node: n, side, toHub: false, t: 0, speed: 0.5 + Math.random() * 0.15, stall: 0,
+      fail: Math.random() < 0.22, failed: false
+    }));
+  }
+  function seedStatic() {
+    packets = [
+      { node: nodes[0], side: 'l', toHub: true,  t: 0.55, stall: 0 },
+      { node: nodes[2], side: 'r', toHub: true,  t: 0.4,  stall: 0 },
+      { node: nodes[3], side: 'l', toHub: false, t: 0.5,  stall: 0 },
+      { node: nodes[1], side: 'r', toHub: false, t: 0.55, stall: 1, failed: true },
+      { node: nodes[4], side: 'l', toHub: false, t: 0.35, stall: 0 }
+    ];
+  }
+
+  function update(dt) {
+    spawnT -= dt;
+    if (spawnT <= 0) { spawnIn(); spawnT = 0.7 + Math.random() * 0.8; }
+    packets.forEach(p => {
+      if (p.stall > 0) { p.stall -= dt; return; }
+      p.t += dt * p.speed;
+      if (!p.toHub && p.fail && !p.failed && p.t >= 0.55) { p.failed = true; p.stall = 1.2; p.t = 0.55; return; }
+      if (p.t >= 1) {
+        p.done = true;
+        if (p.toHub) { hub.pulse = 1; spawnOut(p.side); } else { p.node.glow = 1; }
+      }
+    });
+    packets = packets.filter(p => !p.done);
+    hub.pulse = Math.max(0, hub.pulse - dt * 1.6);
+    nodes.forEach(n => { n.glow = Math.max(0, n.glow - dt * 1.4); });
+  }
+
+  function packetPos(p, back) {
+    const t = back ? Math.max(0, p.t - 0.07) : p.t;
+    return p.toHub
+      ? { x: lerp(p.node.x, hub.x, t), y: lerp(p.node.y, hub.y, t) }
+      : { x: lerp(hub.x, p.node.x, t), y: lerp(hub.y, p.node.y, t) };
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // edges
+    nodes.forEach(n => {
+      ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(hub.x, hub.y);
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.stroke();
+      if (hover === n) {
+        ctx.globalAlpha = 0.7; ctx.strokeStyle = C.cyan; ctx.stroke(); ctx.globalAlpha = 1;
+      }
+    });
+
+    // packets
+    packets.forEach(p => {
+      const stalled = p.stall > 0;
+      const color = stalled ? C.coral : (p.side === 'l' ? C.cyan : C.amber);
+      const head = packetPos(p, false), tail = packetPos(p, true);
+      ctx.beginPath(); ctx.moveTo(tail.x, tail.y); ctx.lineTo(head.x, head.y);
+      ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.globalAlpha = 0.5; ctx.stroke(); ctx.globalAlpha = 1;
+      const flicker = stalled ? (0.55 + 0.45 * Math.sin(performance.now() / 70)) : 1;
+      ctx.save();
+      ctx.globalAlpha = flicker; ctx.shadowColor = color; ctx.shadowBlur = 14;
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(head.x, head.y, stalled ? 5.5 : 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      if (stalled) {
+        ctx.font = '600 11px ' + FONT; ctx.fillStyle = C.coral; ctx.textAlign = 'center';
+        ctx.fillText('retrying', head.x, head.y - 12);
+      }
+    });
+
+    // hub
+    if (hub.pulse > 0) {
+      ctx.beginPath(); ctx.arc(hub.x, hub.y, hub.r + (1 - hub.pulse) * 18, 0, Math.PI * 2);
+      ctx.strokeStyle = C.violet; ctx.globalAlpha = hub.pulse * 0.8; ctx.lineWidth = 2; ctx.stroke(); ctx.globalAlpha = 1;
+    }
+    ctx.beginPath(); ctx.arc(hub.x, hub.y, hub.r, 0, Math.PI * 2);
+    ctx.fillStyle = C.panel; ctx.fill();
+    ctx.strokeStyle = C.violet; ctx.lineWidth = 2; ctx.stroke();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = C.text; ctx.font = '600 13px ' + FONT; ctx.fillText('Queue', hub.x, hub.y - 6);
+    ctx.fillStyle = C.muted; ctx.font = '500 11px ' + FONT; ctx.fillText('retries', hub.x, hub.y + 9);
+
+    // nodes
+    nodes.forEach(n => {
+      rr(n.x - n.w / 2, n.y - n.h / 2, n.w, n.h, 10);
+      ctx.fillStyle = C.panel; ctx.fill();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = C.line; ctx.stroke();
+      const a = hover === n ? 1 : n.glow;
+      if (a > 0) { ctx.globalAlpha = a; ctx.strokeStyle = C.cyan; ctx.stroke(); ctx.globalAlpha = 1; }
+      ctx.fillStyle = C.text; ctx.font = '600 13px ' + FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(n.label, n.x, n.y + 0.5);
+    });
+  }
+
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    update(dt); draw();
+    if (running) raf = requestAnimationFrame(frame);
+  }
+  function start() { if (running || reduce) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); }
+  function stop() { running = false; cancelAnimationFrame(raf); }
+
+  // hover / tap
+  function nodeAt(e) {
+    const r = canvas.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    return nodes.find(n => Math.abs(x - n.x) <= n.w / 2 && Math.abs(y - n.y) <= n.h / 2) || null;
+  }
+  function setHover(n) {
+    if (n === hover) return;
+    hover = n;
+    canvas.style.cursor = n ? 'pointer' : 'default';
+    info.innerHTML = n ? '<strong>' + n.label + '.</strong> ' + n.info : DEFAULT_INFO;
+    if (reduce) draw();
+  }
+  canvas.addEventListener('pointermove', e => setHover(nodeAt(e)));
+  canvas.addEventListener('pointerdown', e => setHover(nodeAt(e)));
+  canvas.addEventListener('pointerleave', () => setHover(null));
+
+  window.addEventListener('resize', resize);
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : (inView && start()));
+  let inView = true;
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(es => { inView = es[0].isIntersecting; inView ? start() : stop(); }).observe(canvas);
+  }
+
+  resize();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
+  start();
+})();
+</script>
+<script>
+/* ===== Two-way sync simulator ===== */
+(() => {
+  const root = document.getElementById('sync-app');
+  if (!root) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const SIDES = {
+    store: { label: 'Online store', brand: 'Shopify', color: 'cyan' },
+    crm: { label: 'CRM', brand: 'HubSpot', color: 'amber' }
+  };
+  const TIERS = ['Bronze', 'Silver', 'Gold'];
+  const PEOPLE = [
+    { id: 'ava', name: 'Ava Patel', tier: 'Silver' },
+    { id: 'ben', name: 'Ben Okafor', tier: 'Bronze' },
+    { id: 'chloe', name: 'Chloe Martin', tier: 'Gold' }
+  ];
+  const POLICY_TEXT = { newest: 'newest change wins', store: 'store always wins', crm: 'CRM always wins' };
+  const other = s => (s === 'store' ? 'crm' : 'store');
+  const first = id => PEOPLE.find(p => p.id === id).name.split(' ')[0];
+  const brand = s => SIDES[s].brand;
+
+  let gen = 0, uid = 0, lastTs = 0, userTouched = false, policy = 'newest';
+  let sys, baseline, queue, echo, stats;
+
+  const ui = { store: {}, crm: {} };
+  const links = { store: document.getElementById('link-l'), crm: document.getElementById('link-r') };
+  const logEl = document.getElementById('sync-log');
+  const queueEl = document.getElementById('sync-queue');
+  const outageBtn = document.getElementById('btn-outage');
+  const statEls = {};
+  root.querySelectorAll('[data-stat]').forEach(el => { statEls[el.dataset.stat] = el; });
+
+  ['store', 'crm'].forEach(side => {
+    const ul = document.getElementById('rows-' + side);
+    PEOPLE.forEach(p => {
+      const li = document.createElement('li');
+      const who = document.createElement('span');
+      who.className = 'who';
+      who.textContent = p.name;
+      const sel = document.createElement('select');
+      sel.setAttribute('aria-label', 'Tier for ' + p.name + ' in ' + SIDES[side].label);
+      TIERS.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; sel.appendChild(o); });
+      sel.addEventListener('change', () => { userTouched = true; edit(side, p.id, sel.value); });
+      li.append(who, sel);
+      ul.appendChild(li);
+      ui[side][p.id] = { li, sel };
+    });
+  });
+
+  const tick = () => (lastTs = Math.max(lastTs + 1, Date.now()));
+  const later = (fn, ms) => { const g = gen; return setTimeout(() => { if (g === gen) fn(); }, ms); };
+
+  function init() {
+    gen++;
+    queue = []; echo = new Set(); stats = { synced: 0, echoes: 0, conflicts: 0, retries: 0 };
+    sys = { store: { online: true, data: {} }, crm: { online: true, data: {} } };
+    baseline = {};
+    PEOPLE.forEach(p => {
+      sys.store.data[p.id] = { tier: p.tier, ts: 0 };
+      sys.crm.data[p.id] = { tier: p.tier, ts: 0 };
+      baseline[p.id] = { tier: p.tier, ts: 0 };
+    });
+    logEl.innerHTML = '';
+    render();
+  }
+
+  function log(msg, kind) {
+    const li = document.createElement('li');
+    li.className = kind || 'info';
+    const t = document.createElement('time');
+    t.textContent = new Date().toLocaleTimeString([], { hour12: false });
+    const s = document.createElement('span');
+    s.textContent = msg;
+    li.append(t, s);
+    logEl.prepend(li);
+    while (logEl.children.length > 40) logEl.lastChild.remove();
+  }
+
+  function fly(side, dir, color) {
+    if (reduce) return;
+    const dot = document.createElement('i');
+    dot.className = 'pkt ' + color;
+    links[side].appendChild(dot);
+    const horizontal = window.matchMedia('(min-width: 900px)').matches;
+    const forward = (side === 'store') === (dir === 'in');
+    const prop = horizontal ? 'left' : 'top';
+    if (dot.animate) {
+      const a = dot.animate([
+        { [prop]: forward ? '0%' : '100%', opacity: 0 },
+        { opacity: 1, offset: 0.15 },
+        { opacity: 1, offset: 0.85 },
+        { [prop]: forward ? '100%' : '0%', opacity: 0 }
+      ], { duration: 520, easing: 'ease-in-out' });
+      a.onfinish = () => dot.remove();
+    } else setTimeout(() => dot.remove(), 520);
+  }
+
+  function flash(side, id, color) {
+    const li = ui[side][id].li;
+    li.classList.remove('flash-cyan', 'flash-amber', 'flash-violet');
+    void li.offsetWidth;
+    li.classList.add('flash-' + color);
+  }
+
+  function render() {
+    ['store', 'crm'].forEach(side => {
+      PEOPLE.forEach(p => {
+        const u = ui[side][p.id];
+        u.sel.value = sys[side].data[p.id].tier;
+        u.sel.disabled = !sys[side].online;
+      });
+      const st = document.getElementById('state-' + side);
+      st.classList.toggle('down', !sys[side].online);
+      st.querySelector('span').textContent = sys[side].online ? 'Online' : 'Outage';
+    });
+    queueEl.innerHTML = '';
+    if (!queue.length) {
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'Nothing waiting. All caught up.';
+      queueEl.appendChild(li);
+    } else {
+      queue.forEach(j => {
+        const li = document.createElement('li');
+        li.textContent = first(j.id) + ' to ' + brand(other(j.from)) + ': ' + j.tier;
+        if (j.attempts) {
+          li.className = 'try';
+          const em = document.createElement('em');
+          em.textContent = ' (retry ' + j.attempts + ')';
+          li.appendChild(em);
+        }
+        queueEl.appendChild(li);
+      });
+    }
+    Object.keys(statEls).forEach(k => { statEls[k].textContent = stats[k]; });
+    outageBtn.setAttribute('aria-pressed', String(!sys.crm.online));
+    outageBtn.textContent = sys.crm.online ? 'Simulate CRM outage' : 'End CRM outage';
+  }
+
+  // A person changes a value in one of the systems.
+  function edit(side, id, tier) {
+    if (!sys[side].online) { render(); return; }
+    if (sys[side].data[id].tier === tier) return;
+    const ts = tick();
+    sys[side].data[id] = { tier, ts };
+    log(SIDES[side].label + ': ' + first(id) + ' changed to ' + tier + '.', 'info');
+    render();
+    later(() => receive({ side, id, tier, ts }), 450); // the system's webhook arrives a moment later
+  }
+
+  // The engine receives a change notification (a webhook).
+  function receive(evt) {
+    fly(evt.side, 'in', SIDES[evt.side].color);
+    const key = evt.side + ':' + evt.id + ':' + evt.tier;
+    if (echo.has(key)) {
+      echo.delete(key);
+      stats.echoes++;
+      log('Ignored echo: ' + brand(evt.side) + ' reported ' + first(evt.id) + ' = ' + evt.tier + ', but the engine wrote that itself. Loop prevented.', 'echo');
+      render();
+      return;
+    }
+    queue = queue.filter(j => {
+      if (j.from === evt.side && j.id === evt.id) {
+        clearTimeout(j.timer);
+        log('A newer change to ' + first(evt.id) + ' replaced the one still waiting in the queue.', 'info');
+        return false;
+      }
+      return true;
+    });
+    const job = { uid: ++uid, from: evt.side, id: evt.id, tier: evt.tier, ts: evt.ts, attempts: 0, timer: null };
+    queue.push(job);
+    log('Webhook from ' + brand(evt.side) + ': ' + first(evt.id) + ' = ' + evt.tier + '. Queued.', 'info');
+    render();
+    schedule(job, 500);
+  }
+
+  function schedule(job, ms) { job.timer = later(() => process(job), ms); }
+  function remove(job) { queue = queue.filter(j => j !== job); }
+
+  function resolveWinner(job, target, cur) {
+    if (policy === 'store') return 'store';
+    if (policy === 'crm') return 'crm';
+    return job.ts >= cur.ts ? job.from : target; // newest change wins
+  }
+
+  function process(job) {
+    if (!queue.includes(job)) return;
+    const target = other(job.from);
+    const down = !sys[target].online ? target : (!sys[job.from].online ? job.from : null);
+
+    if (down) {
+      job.attempts++;
+      stats.retries++;
+      const wait = Math.min(6000, 1500 * Math.pow(2, job.attempts - 1));
+      log(brand(down) + ' is unavailable (503). Retry ' + job.attempts + ' in ' + (wait / 1000).toFixed(1) + 's, backing off.', 'error');
+      render();
+      schedule(job, wait);
+      return;
+    }
+    if (job.ts <= baseline[job.id].ts) {
+      remove(job);
+      log('Skipped an older change to ' + first(job.id) + '. It was already reconciled.', 'info');
+      render();
+      return;
+    }
+    const cur = sys[target].data[job.id];
+    const base = baseline[job.id];
+
+    if (cur.tier === job.tier) {
+      baseline[job.id] = { tier: job.tier, ts: tick() };
+      remove(job);
+      log(first(job.id) + ' already matches in ' + brand(target) + '. Nothing to do.', 'ok');
+      render();
+      return;
+    }
+    if (cur.tier !== base.tier) {
+      stats.conflicts++;
+      const winner = resolveWinner(job, target, cur);
+      const winTier = winner === job.from ? job.tier : cur.tier;
+      log('Conflict on ' + first(job.id) + ': ' + brand(job.from) + ' says ' + job.tier + ', ' + brand(target) + ' says ' + cur.tier + '. Rule "' + POLICY_TEXT[policy] + '" picks ' + brand(winner) + '.', 'conflict');
+      remove(job);
+      write(other(winner), job.id, winTier, winner, true);
+    } else {
+      remove(job);
+      write(target, job.id, job.tier, job.from, false);
+    }
+  }
+
+  // The engine writes a value into a system, then expects an echo webhook back.
+  function write(side, id, tier, origin, isConflict) {
+    echo.add(side + ':' + id + ':' + tier);
+    const ts = tick();
+    sys[side].data[id] = { tier, ts };
+    baseline[id] = { tier, ts };
+    stats.synced++;
+    fly(side, 'out', SIDES[origin].color);
+    flash(side, id, isConflict ? 'violet' : SIDES[origin].color);
+    log('Synced: ' + first(id) + ' = ' + tier + ' written to ' + brand(side) + '.', 'ok');
+    render();
+    later(() => receive({ side, id, tier, ts }), 450);
+  }
+
+  function toggleOutage() {
+    userTouched = true;
+    sys.crm.online = !sys.crm.online;
+    if (!sys.crm.online) {
+      log('HubSpot went down. Changes will wait in the queue.', 'error');
+    } else {
+      log('HubSpot is back. Delivering what was waiting.', 'ok');
+      queue.forEach(j => { clearTimeout(j.timer); schedule(j, 300); });
+    }
+    render();
+  }
+
+  function forceConflict() {
+    userTouched = true;
+    if (!sys.crm.online || !sys.store.online) { log('End the outage first, then force a conflict.', 'error'); return; }
+    const id = 'ava';
+    const options = TIERS.filter(t => t !== baseline[id].tier);
+    log('Forcing a conflict: ' + first(id) + ' is changed in both systems at almost the same moment.', 'conflict');
+    edit('store', id, options[0]);
+    later(() => edit('crm', id, options[1]), 150);
+  }
+
+  document.getElementById('btn-conflict').addEventListener('click', forceConflict);
+  outageBtn.addEventListener('click', toggleOutage);
+  document.getElementById('btn-reset').addEventListener('click', () => { userTouched = true; init(); log('Reset. Both systems match again.', 'info'); });
+  document.getElementById('policy').addEventListener('change', e => {
+    policy = e.target.value;
+    log('Conflict rule set to: ' + POLICY_TEXT[policy] + '.', 'info');
+  });
+
+  function autoplay() {
+    log('Watch: a change in the store is about to reach the CRM.', 'info');
+    later(() => { if (!userTouched) edit('store', 'ava', 'Gold'); }, 900);
+    later(() => { if (!userTouched) edit('crm', 'ben', 'Silver'); }, 4300);
+  }
+
+  init();
+  if ('IntersectionObserver' in window && !reduce) {
+    const io = new IntersectionObserver(es => {
+      if (es[0].isIntersecting) { io.disconnect(); autoplay(); }
+    }, { threshold: 0.35 });
+    io.observe(root);
+  }
+})();
+
+/* ===== OAuth 2.0 step-through ===== */
+(() => {
+  const body = document.getElementById('oa-body');
+  if (!body) return;
+
+  const ROWS = [
+    { step: 1, from: 0, to: 1, label: 'Click “Connect HubSpot”' },
+    { step: 2, from: 1, to: 2, label: 'Redirect with client_id, scope, state' },
+    { step: 3, from: 0, to: 2, label: 'Log in and approve' },
+    { step: 4, from: 2, to: 1, label: 'Redirect back with code + state' },
+    { step: 5, from: 1, to: 2, label: 'code + verifier + secret' },
+    { step: 5, from: 2, to: 1, label: 'access + refresh token' },
+    { step: 6, from: 1, to: 3, label: 'Bearer access token' },
+    { step: 6, from: 3, to: 1, label: '200 OK with data' },
+    { step: 7, from: 1, to: 2, label: 'refresh token' },
+    { step: 7, from: 2, to: 1, label: 'new access token' }
+  ];
+
+  const STEPS = [
+    {
+      title: 'You click “Connect”',
+      text: 'My app prepares three one-time values for this attempt: a random state so it can recognise this exact request later, a secret code_verifier, and its fingerprint, the code_challenge.',
+      code: 'state          = a1b2c3d4            (random)\ncode_verifier  = (random secret, kept on my server)\ncode_challenge = SHA256(code_verifier)',
+      safe: 'These values exist only for this one attempt, so they cannot be reused later.'
+    },
+    {
+      title: 'My app sends you to the login page',
+      text: 'Your browser is redirected to the provider. The request says who is asking, which permissions it wants, and carries the state and the challenge.',
+      code: 'GET https://auth.provider.com/authorize\n  ?client_id=MY_APP\n  &redirect_uri=https://myapp.com/auth/callback\n  &response_type=code\n  &scope=crm.objects.contacts.read\n  &state=a1b2c3d4\n  &code_challenge=E9Melhoa2Ow...\n  &code_challenge_method=S256',
+      safe: 'Permissions are requested explicitly, so the app can only get what you approve.'
+    },
+    {
+      title: 'You log in and approve',
+      text: 'You sign in on the provider\'s own page and see exactly which permissions the app is asking for. My app never sees your password.',
+      code: 'You:      sign in with your usual account\nProvider: "MY_APP wants to read your contacts."\nYou:      click "Grant access"',
+      safe: 'Your password is only ever typed into the provider\'s own site.'
+    },
+    {
+      title: 'The provider sends you back with a code',
+      text: 'Your browser returns to my app carrying a short-lived, one-time code and the same state. The first thing my app does is check that the state matches the one it created.',
+      code: 'GET https://myapp.com/auth/callback\n  ?code=ONE_TIME_CODE\n  &state=a1b2c3d4     <- must match, or the request is rejected',
+      safe: 'The state check blocks forged callbacks (CSRF). The code alone is useless and expires within minutes.'
+    },
+    {
+      title: 'My server swaps the code for tokens',
+      text: 'This happens server to server, never in the browser. My app proves it is the same app that started the flow by sending the secret verifier and its client secret.',
+      code: 'POST https://auth.provider.com/token\n  grant_type    = authorization_code\n  code          = ONE_TIME_CODE\n  code_verifier = (the secret from step 1)\n  client_secret = (kept on my server)\n\n-> { "access_token": "...",\n     "refresh_token": "...",\n     "expires_in": 1800 }',
+      safe: 'A stolen code can\'t be redeemed without the verifier. The tokens are then stored encrypted.'
+    },
+    {
+      title: 'My app calls the API',
+      text: 'Every API request carries the access token. The API checks that it is genuine, not expired, and allowed for the permissions you granted.',
+      code: 'GET https://api.provider.com/crm/v3/objects/contacts\nAuthorization: Bearer ACCESS_TOKEN\n\n-> 200 OK  { "results": [ ... ] }',
+      safe: 'The access token is short-lived, so a leaked one stops working quickly.'
+    },
+    {
+      title: 'Later: a quiet refresh',
+      text: 'When the access token is about to expire, my app uses the refresh token to get a new one. You are not asked to log in again. A lock makes sure only one refresh runs at a time.',
+      code: 'POST https://auth.provider.com/token\n  grant_type    = refresh_token\n  refresh_token = (stored encrypted on my server)\n\n-> { "access_token": "NEW...", "expires_in": 1800 }',
+      safe: 'The refresh token never leaves my server, and you can revoke access any time from the provider.'
+    }
+  ];
+
+  const rows = ROWS.map(r => {
+    const lo = Math.min(r.from, r.to), hi = Math.max(r.from, r.to);
+    const el = document.createElement('div');
+    el.className = 'msg' + (r.to < r.from ? ' rtl' : '');
+    el.style.gridColumn = (lo + 1) + ' / ' + (hi + 2);
+    el.style.setProperty('--n', String(hi - lo + 1));
+    const lbl = document.createElement('span');
+    lbl.className = 'lbl';
+    const inner = document.createElement('span');
+    inner.textContent = r.label;
+    lbl.appendChild(inner);
+    const ln = document.createElement('div');
+    ln.className = 'ln';
+    el.append(lbl, ln);
+    body.appendChild(el);
+    return { el, step: r.step };
+  });
+
+  const stepsEl = document.getElementById('oa-steps');
+  const buttons = STEPS.map((s, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = String(i + 1);
+    b.setAttribute('aria-label', 'Step ' + (i + 1) + ': ' + s.title);
+    b.addEventListener('click', () => { stop(); show(i); });
+    stepsEl.appendChild(b);
+    return b;
+  });
+
+  const title = document.getElementById('oa-title');
+  const text = document.getElementById('oa-text');
+  const code = document.getElementById('oa-code');
+  const safe = document.getElementById('oa-safe');
+  const prev = document.getElementById('oa-prev');
+  const next = document.getElementById('oa-next');
+  const play = document.getElementById('oa-play');
+  let cur = 0, timer = null;
+
+  function show(i) {
+    cur = i;
+    rows.forEach(r => {
+      r.el.classList.toggle('now', r.step === i + 1);
+      r.el.classList.toggle('past', r.step < i + 1);
+    });
+    buttons.forEach((b, j) => {
+      b.setAttribute('aria-current', j === i ? 'step' : 'false');
+      b.classList.toggle('done', j < i);
+    });
+    const s = STEPS[i];
+    title.textContent = (i + 1) + '. ' + s.title;
+    text.textContent = s.text;
+    code.textContent = s.code;
+    safe.textContent = 'Why it is safe: ' + s.safe;
+    prev.disabled = i === 0;
+    next.disabled = i === STEPS.length - 1;
+  }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } play.textContent = 'Play'; }
+
+  prev.addEventListener('click', () => { stop(); show(Math.max(0, cur - 1)); });
+  next.addEventListener('click', () => { stop(); show(Math.min(STEPS.length - 1, cur + 1)); });
+  play.addEventListener('click', () => {
+    if (timer) { stop(); return; }
+    play.textContent = 'Pause';
+    if (cur === STEPS.length - 1) show(0);
+    timer = setInterval(() => { if (cur >= STEPS.length - 1) { stop(); return; } show(cur + 1); }, 3600);
+  });
+  show(0);
+})();
+
+/* ===== JWT inspector (real HMAC-SHA256 in the browser) ===== */
+(() => {
+  const root = document.getElementById('jwt');
+  if (!root) return;
+  const strEl = document.getElementById('jwt-str');
+  const hEl = document.getElementById('jwt-h');
+  const pEl = document.getElementById('jwt-p');
+  const metaEl = document.getElementById('jwt-meta');
+  const verdict = document.getElementById('jwt-verdict');
+  const headEl = document.getElementById('jwt-head');
+  const checksEl = document.getElementById('jwt-checks');
+
+  if (!(window.crypto && window.crypto.subtle)) {
+    headEl.textContent = 'This demo needs a modern browser with Web Crypto support.';
+    root.querySelector('.jwt-actions').hidden = true;
+    return;
+  }
+
+  const SECRET = 'a-secret-only-the-server-knows';
+  const enc = new TextEncoder();
+  const dec = new TextDecoder();
+  const toB64u = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const strToB64u = s => toB64u(enc.encode(s));
+  const b64uToStr = s => {
+    const b = s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4);
+    return dec.decode(Uint8Array.from(atob(b), c => c.charCodeAt(0)));
+  };
+  async function sign(data, key) {
+    const k = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    return toB64u(new Uint8Array(await crypto.subtle.sign('HMAC', k, enc.encode(data))));
+  }
+
+  const ISS = 'https://auth.example.com', AUD = 'my-api';
+  let issuedPayload, baseLines, tok, shiftSec, changedPart;
+
+  async function issue() {
+    const now = Math.floor(Date.now() / 1000);
+    issuedPayload = { sub: 'user_8f3a', name: 'Astha', role: 'user', iss: ISS, aud: AUD, iat: now, exp: now + 900 };
+    baseLines = new Set(JSON.stringify(issuedPayload, null, 2).split('\n'));
+    const h = strToB64u(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const p = strToB64u(JSON.stringify(issuedPayload));
+    tok = { h, p, s: await sign(h + '.' + p, SECRET) };
+    shiftSec = 0;
+    changedPart = null;
+    await show();
+  }
+
+  function pretty(b64) {
+    try { return JSON.stringify(JSON.parse(b64uToStr(b64)), null, 2); } catch (e) { return null; }
+  }
+
+  async function show() {
+    strEl.textContent = '';
+    [['t-h', tok.h], ['t-p', tok.p], ['t-s', tok.s]].forEach(([cls, val], i) => {
+      const span = document.createElement('span');
+      span.className = cls + (changedPart === cls ? ' t-changed' : '');
+      span.textContent = val;
+      strEl.appendChild(span);
+      if (i < 2) strEl.appendChild(document.createTextNode('.'));
+    });
+
+    hEl.textContent = pretty(tok.h) || '(not valid JSON)';
+    const pp = pretty(tok.p);
+    pEl.textContent = '';
+    if (pp === null) pEl.textContent = '(not valid JSON)';
+    else pp.split('\n').forEach((line, i, arr) => {
+      const node = baseLines.has(line) ? document.createTextNode(line) : Object.assign(document.createElement('mark'), { textContent: line });
+      pEl.appendChild(node);
+      if (i < arr.length - 1) pEl.appendChild(document.createTextNode('\n'));
+    });
+
+    let payload = null;
+    try { payload = JSON.parse(b64uToStr(tok.p)); } catch (e) { /* stays null */ }
+    const now = Math.floor(Date.now() / 1000) + shiftSec;
+    const expected = await sign(tok.h + '.' + tok.p, SECRET);
+    const sigOk = expected === tok.s;
+    const live = !!payload && typeof payload.exp === 'number' && payload.exp > now;
+    const claimsOk = !!payload && payload.iss === ISS && payload.aud === AUD;
+
+    if (payload && typeof payload.exp === 'number') {
+      const left = payload.exp - now;
+      const m = Math.floor(Math.abs(left) / 60), s = Math.abs(left) % 60;
+      metaEl.textContent = left > 0
+        ? 'Expires in ' + m + ' min ' + s + ' s (clock moved forward ' + Math.round(shiftSec / 60) + ' min).'
+        : 'Expired ' + m + ' min ' + s + ' s ago.';
+    } else metaEl.textContent = '';
+
+    const accepted = sigOk && live && claimsOk;
+    verdict.className = 'verdict ' + (accepted ? 'ok' : 'bad');
+    if (accepted) headEl.textContent = 'Accepted. The server trusts this token: ' + payload.name + ', role "' + payload.role + '".';
+    else if (!sigOk) headEl.textContent = 'Rejected. The signature does not match, so the token was changed or not issued by my server.';
+    else if (!live) headEl.textContent = 'Rejected. The token has expired. The app would use its refresh token to get a new one.';
+    else headEl.textContent = 'Rejected. The token was not issued for this API.';
+
+    const checks = [
+      [sigOk, 'Signature matches (HMAC-SHA256 with the server\'s secret key)'],
+      [live, 'Not expired'],
+      [claimsOk, 'Issuer and audience are correct']
+    ];
+    checksEl.textContent = '';
+    checks.forEach(([ok, label]) => {
+      const li = document.createElement('li');
+      li.className = ok ? 'pass' : 'fail';
+      li.dataset.s = ok ? 'Pass' : 'Fail';
+      li.textContent = label;
+      checksEl.appendChild(li);
+    });
+  }
+
+  async function act(name) {
+    if (name === 'reset') return issue();
+    if (name === 'expire') { shiftSec += 20 * 60; changedPart = null; return show(); }
+    const current = JSON.parse(b64uToStr(tok.p));
+    const p = strToB64u(JSON.stringify({ ...current, role: 'admin' }));
+    if (name === 'tamper') { tok = { h: tok.h, p, s: tok.s }; changedPart = 't-p'; }  // old signature kept
+    if (name === 'forge') { tok = { h: tok.h, p, s: await sign(tok.h + '.' + p, 'attacker-guessed-key') }; changedPart = 't-s'; }
+    return show();
+  }
+
+  root.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => act(b.dataset.act)));
+  issue();
+})();
+</script>
+</body>
+</html>
