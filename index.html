@@ -490,6 +490,28 @@
   .checks-list li::before { content: ""; position: absolute; left: 0; top: .2em; width: 18px; height: 18px; border-radius: 50%;
     background: rgba(74,222,128,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%234ADE80' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5.5 10.5 3 3 6-7'/%3E%3C/svg%3E") center/12px no-repeat; }
 
+
+  /* Services carousel */
+  .carousel { position: relative; }
+  .car-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: -18px 0 22px; }
+  .car-dots { display: flex; gap: 8px; }
+  .car-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px; background: rgba(255,255,255,.18); cursor: pointer; transition: width .3s, background .3s; }
+  .car-dots button[aria-selected="true"] { width: 28px; background: var(--cyan); }
+  .car-btns { display: flex; gap: 10px; }
+  .car-btn { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line-2); background: rgba(17,21,52,.8); color: var(--text); cursor: pointer; transition: background .2s, border-color .2s, opacity .2s; }
+  .car-btn:hover:not(:disabled) { background: rgba(92,225,255,.12); border-color: var(--cyan); }
+  .car-btn:disabled { opacity: .35; cursor: default; }
+  .services-grid.car-track { display: flex !important; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none;
+    padding: 6px 2px 24px; margin: 0 -2px; overscroll-behavior-x: contain; cursor: grab; }
+  .car-track::-webkit-scrollbar { display: none; }
+  .car-track.dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
+  .car-track.dragging * { user-select: none; pointer-events: none; }
+  .car-track .svc { flex: 0 0 clamp(270px, 82%, 380px); scroll-snap-align: start; grid-column: auto !important; transition: transform .3s, border-color .3s, opacity .3s; }
+  @media (min-width: 1040px) { .car-track .svc { flex-basis: calc((100% - 36px) / 3); } }
+  .car-track:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; border-radius: 20px; }
+  .car-progress { height: 2px; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
+  .car-progress i { display: block; height: 100%; width: 0; background: var(--cyan); transition: width .2s; }
+
   /* Projects */
   .proj-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
   @media (min-width: 900px) { .proj-grid { grid-template-columns: repeat(3, 1fr); } .proj.feature { grid-column: 1 / -1; display: grid; grid-template-columns: 1.05fr 1fr; } }
@@ -839,8 +861,16 @@
       <p class="eyebrow">Services</p>
       <h2>What I can build for you</h2>
       <p class="sec-intro">From a single webhook or automated workflow to a full two-way sync between your store, CRM and ERP.</p>
-      <div class="services-grid">
-        <article class="svc card-x wide">
+      <div class="carousel" id="svc-carousel" aria-roledescription="carousel" aria-label="Services">
+      <div class="car-head">
+        <div class="car-dots" id="svc-dots" role="tablist" aria-label="Choose a service"></div>
+        <div class="car-btns">
+          <button type="button" class="car-btn" id="svc-prev" aria-label="Previous service"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10H4"/><path d="m9 5-5 5 5 5"/></svg></button>
+          <button type="button" class="car-btn" id="svc-next" aria-label="Next service"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></button>
+        </div>
+      </div>
+      <div class="services-grid car-track" id="svc-track" tabindex="0">
+        <article class="svc card-x">
           <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>
           <h3>Connect the tools you already use</h3>
           <p>Keep your store, CRM and ERP in step, so nobody copies data between systems by hand.</p>
@@ -891,6 +921,8 @@
           </ul>
         </article>
       </div>
+      </div>
+      <div class="car-progress" aria-hidden="true"><i id="svc-prog"></i></div>
     </div>
   </section>
 
@@ -1845,6 +1877,41 @@
     const r = c.getBoundingClientRect();
     c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
   }));
+})();
+</script>
+<script>
+/* Services carousel: buttons, dots, keyboard, drag */
+(() => {
+  const track = document.getElementById('svc-track'); if (!track) return;
+  const cards = [...track.children], dots = document.getElementById('svc-dots');
+  const prev = document.getElementById('svc-prev'), next = document.getElementById('svc-next'), prog = document.getElementById('svc-prog');
+  cards.forEach((c, i) => {
+    c.setAttribute('role', 'group'); c.setAttribute('aria-roledescription', 'slide'); c.setAttribute('aria-label', `${i + 1} of ${cards.length}`);
+    const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab');
+    b.setAttribute('aria-label', c.querySelector('h3').textContent); b.addEventListener('click', () => go(i)); dots.appendChild(b);
+  });
+  const step = () => cards[1] ? cards[1].offsetLeft - cards[0].offsetLeft : track.clientWidth;
+  const index = () => Math.round(track.scrollLeft / step());
+  const go = (i) => track.scrollTo({ left: Math.max(0, Math.min(i, cards.length - 1)) * step() });
+  const update = () => {
+    const max = track.scrollWidth - track.clientWidth, i = index();
+    [...dots.children].forEach((d, k) => d.setAttribute('aria-selected', k === i || (track.scrollLeft >= max - 4 && k === cards.length - 1) ? 'true' : 'false'));
+    prev.disabled = track.scrollLeft <= 4; next.disabled = track.scrollLeft >= max - 4;
+    prog.style.width = (max > 0 ? Math.max(12, (track.scrollLeft / max) * 100) : 100) + '%';
+  };
+  prev.addEventListener('click', () => go(index() - 1));
+  next.addEventListener('click', () => go(index() + 1));
+  track.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+  addEventListener('resize', update);
+  track.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(index() + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(index() - 1); }
+  });
+  let x0 = 0, s0 = 0, down = false, moved = false;
+  track.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; down = true; moved = false; x0 = e.clientX; s0 = track.scrollLeft; });
+  addEventListener('pointermove', (e) => { if (!down) return; const dx = e.clientX - x0; if (Math.abs(dx) > 4) { moved = true; track.classList.add('dragging'); } track.scrollLeft = s0 - dx; });
+  addEventListener('pointerup', () => { if (!down) return; down = false; track.classList.remove('dragging'); if (moved) go(index()); });
+  update();
 })();
 </script>
 </body>
