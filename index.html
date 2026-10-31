@@ -12,7 +12,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080B1F'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%235CE1FF'/%3E%3Ccircle cx='14' cy='18' r='4' fill='%238B6BFF'/%3E%3Ccircle cx='50' cy='46' r='4' fill='%23FFC857'/%3E%3Cpath d='M14 18L32 32L50 46' stroke='%232A3170' stroke-width='3' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: dark;
@@ -379,19 +379,216 @@
   .log li .d { display: block; color: var(--muted); font-size: 0.82rem; word-break: break-word; }
   .live .log { max-height: 360px; }
   .badge-live { display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #04132a; background: #4ADE80; border-radius: 6px; padding: 2px 8px; margin-left: 10px; vertical-align: middle; }
+
+  /* =====================================================================
+     Modern layer: glass, gradients, bento, motion
+     ===================================================================== */
+  :root {
+    --void: #05071A; --panel: rgba(20, 26, 66, .55); --panel-2: rgba(28, 36, 88, .6);
+    --line: rgba(120, 132, 255, .16); --line-2: rgba(120, 132, 255, .32);
+    --grad: linear-gradient(100deg, #5CE1FF 0%, #8B6BFF 50%, #FF7AC6 100%);
+    --body: "Inter", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    --radius: 20px;
+  }
+  body { background: var(--void); overflow-x: hidden; }
+  ::selection { background: rgba(139, 107, 255, .45); color: #fff; }
+
+  .aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .aurora span { position: absolute; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(90px); opacity: .32; animation: drift 26s ease-in-out infinite alternate; }
+  .aurora span:nth-child(1) { background: #3B5BFF; top: -18vmax; left: -10vmax; }
+  .aurora span:nth-child(2) { background: #8B6BFF; top: 20vh; right: -18vmax; animation-duration: 32s; opacity: .26; }
+  .aurora span:nth-child(3) { background: #00C2FF; bottom: -24vmax; left: 30vw; animation-duration: 38s; opacity: .16; }
+  @keyframes drift { to { transform: translate(6vmax, 4vmax) scale(1.12); } }
+  body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .5;
+    background-image: radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px); background-size: 28px 28px;
+    -webkit-mask-image: linear-gradient(#000, transparent 85%); mask-image: linear-gradient(#000, transparent 85%); }
+
+  .progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 50; background: var(--grad); }
+
+  /* Floating glass nav */
+  .top { top: 14px; background: transparent; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .top .wrap { height: 60px; padding: 0 10px 0 18px; border-radius: 999px; border: 1px solid var(--line);
+    background: rgba(10, 13, 38, .62); backdrop-filter: blur(16px) saturate(150%); -webkit-backdrop-filter: blur(16px) saturate(150%);
+    box-shadow: 0 10px 40px -12px rgba(0,0,0,.6); transition: background .3s; }
+  .top.scrolled .wrap { background: rgba(10, 13, 38, .85); }
+  .brand { display: inline-flex; align-items: center; gap: 10px; }
+  .logo { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--grad); color: #05071A; font: 800 .8rem var(--display); letter-spacing: -.02em; }
+  .nav { gap: 6px; }
+  .nav a:not(.btn) { padding: 8px 14px; border-radius: 999px; transition: background .2s, color .2s; }
+  .nav a:not(.btn):hover, .nav a.active { background: rgba(255,255,255,.06); color: var(--text); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 12px 22px; transition: transform .2s, box-shadow .25s, background .2s; }
+  .btn svg { transition: transform .2s; }
+  .btn:hover svg { transform: translateX(3px); }
+  .btn.small { padding: 9px 18px; }
+  .btn.glow { background: var(--grad); border: 0; color: #05071A; box-shadow: 0 8px 30px -6px rgba(139,107,255,.7); }
+  .btn.glow:hover { transform: translateY(-2px); box-shadow: 0 14px 40px -8px rgba(139,107,255,.9); background: var(--grad); }
+  .btn.ghost { background: rgba(255,255,255,.04); border-color: var(--line-2); backdrop-filter: blur(8px); }
+  .btn.ghost:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.35); }
+
+  /* Hero */
+  .hero { padding: 120px 0 72px; background: none; }
+  .hero::before { -webkit-mask-image: radial-gradient(ellipse 60% 60% at 70% 40%, #000 10%, transparent 70%); mask-image: radial-gradient(ellipse 60% 60% at 70% 40%, #000 10%, transparent 70%); }
+  .status { padding: 7px 14px 7px 12px; border-radius: 999px; border: 1px solid rgba(74,222,128,.3); background: rgba(74,222,128,.07); color: #C9F7D9; font-size: .88rem; }
+  .status i { animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,.55); } 70% { box-shadow: 0 0 0 9px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
+  h1 { font-weight: 700; font-size: clamp(2.5rem, 5.6vw, 4.3rem); letter-spacing: -.04em; line-height: 1.02; }
+  .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; background-size: 200% auto; animation: shine 8s linear infinite; }
+  @keyframes shine { to { background-position: 200% center; } }
+  .lede { font-size: 1.15rem; line-height: 1.65; }
+  .hero-facts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin: 40px 0 0; padding: 0; border: 0; }
+  .hero-facts div { padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(10px); }
+  .hero-facts dt { white-space: nowrap; font: 700 clamp(1.05rem, 1.7vw, 1.45rem) var(--display); letter-spacing: -.03em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-facts dd { margin: 4px 0 0; color: var(--muted); font-size: .85rem; line-height: 1.35; }
+  .glass { padding: 14px; border-radius: 26px; border: 1px solid var(--line); background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.01)); backdrop-filter: blur(14px); box-shadow: 0 30px 80px -30px rgba(59,91,255,.55), inset 0 1px 0 rgba(255,255,255,.08); }
+  .glass #net { border-radius: 18px; border-color: rgba(120,132,255,.12); }
+  .net-info { font-size: .88rem; margin: 12px 6px 4px; }
+
+  /* Marquee */
+  .marquee { position: relative; overflow: hidden; padding: 22px 0; border-block: 1px solid var(--line); background: rgba(255,255,255,.015);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+  .marquee-track { display: flex; gap: 56px; width: max-content; animation: scroll 40s linear infinite; }
+  .marquee span { font: 600 1.05rem var(--display); color: rgba(232,236,255,.45); white-space: nowrap; letter-spacing: -.01em; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes scroll { to { transform: translateX(-50%); } }
+
+  /* Sections */
+  .sec { padding: 110px 0; }
+  .sec + .sec { border-top: 0; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 14px; font: 600 .78rem var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--cyan); }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--cyan); }
+  h2 { font-weight: 700; font-size: clamp(2rem, 3.8vw, 2.9rem); letter-spacing: -.035em; }
+  .sec-intro { font-size: 1.08rem; }
+
+  /* Card primitive */
+  .card-x { position: relative; border-radius: var(--radius); border: 1px solid var(--line); background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.012)); backdrop-filter: blur(12px);
+    transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .3s; overflow: hidden; isolation: isolate; }
+  .card-x::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: 0; transition: opacity .35s;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(139,107,255,.18), transparent 60%); }
+  .card-x:hover { transform: translateY(-4px); border-color: var(--line-2); box-shadow: 0 24px 60px -24px rgba(59,91,255,.55); }
+  .card-x:hover::before { opacity: 1; }
+  .ic { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; margin-bottom: 18px; color: var(--cyan);
+    background: linear-gradient(140deg, rgba(92,225,255,.16), rgba(139,107,255,.14)); border: 1px solid rgba(92,225,255,.22); }
+
+  /* Results bento */
+  .results.bento { gap: 16px; }
+  @media (min-width: 1000px) { .results.bento { grid-template-columns: 1.5fr 1fr 1fr 1fr; } }
+  .result.card-x { border-left: 1px solid var(--line); padding: 26px; }
+  .result.card-x b { font-size: 1.25rem; margin-bottom: 8px; }
+  .result .big { font-size: clamp(1.7rem, 2.6vw, 2.2rem) !important; letter-spacing: -.04em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .result .big em { font-style: normal; -webkit-text-fill-color: var(--muted); }
+
+  /* Services */
+  .services-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 860px) { .services-grid { grid-template-columns: repeat(5, 1fr); } .svc { grid-column: span 2; } .svc.wide { grid-column: span 3; } }
+  .svc { padding: 30px; }
+  .svc h3 { font: 600 1.3rem var(--display); letter-spacing: -.02em; margin: 0 0 8px; }
+  .svc p { color: var(--muted); margin: 0 0 18px; }
+  .checks-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .checks-list li { position: relative; padding-left: 28px; font-size: .96rem; }
+  .checks-list li::before { content: ""; position: absolute; left: 0; top: .2em; width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(74,222,128,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%234ADE80' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5.5 10.5 3 3 6-7'/%3E%3C/svg%3E") center/12px no-repeat; }
+
+  /* Projects */
+  .proj-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .proj-grid { grid-template-columns: repeat(3, 1fr); } .proj.feature { grid-column: 1 / -1; display: grid; grid-template-columns: 1.05fr 1fr; } }
+  .proj { padding: 28px; display: flex; flex-direction: column; }
+  .proj.feature { padding: 0; }
+  .proj-body { padding: 36px; display: flex; flex-direction: column; }
+  .proj h3 { font: 700 1.45rem var(--display); letter-spacing: -.03em; margin: 0 0 10px; }
+  .proj.feature h3 { font-size: 1.9rem; }
+  .proj p { color: var(--muted); margin: 0 0 16px; }
+  .kicker { font: 600 .74rem var(--mono) !important; letter-spacing: .12em; text-transform: uppercase; color: var(--violet) !important; margin: 0 0 10px !important; filter: brightness(1.35); }
+  .proj .tags { margin: 18px 0 22px; }
+  .tags li { background: rgba(255,255,255,.04); border-color: var(--line); color: #C3CAF5; font-size: .8rem; }
+  .proj .btn { align-self: flex-start; margin-top: auto; }
+  .link-arrow { margin-top: auto; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--cyan); text-decoration: none; }
+  .link-arrow svg { transition: transform .2s; }
+  .link-arrow:hover svg { transform: translateX(4px); }
+  .proj-visual { position: relative; display: grid; place-items: center; padding: 36px; min-height: 300px;
+    background: radial-gradient(circle at 30% 20%, rgba(92,225,255,.22), transparent 55%), radial-gradient(circle at 80% 90%, rgba(255,122,198,.2), transparent 55%), linear-gradient(160deg, #0C1240, #070A24);
+    border-right: 1px solid var(--line); }
+  .term { width: 100%; max-width: 470px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.1); background: rgba(5,7,26,.88); box-shadow: 0 30px 60px -20px rgba(0,0,0,.8); transform: rotate(-1.2deg); transition: transform .4s; }
+  .proj.feature:hover .term { transform: rotate(0) scale(1.02); }
+  .term-bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.07); }
+  .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #FF5F57; }
+  .term-bar i:nth-child(2) { background: #FEBC2E; } .term-bar i:nth-child(3) { background: #28C840; }
+  .term-bar span { margin-left: 8px; font: .75rem var(--mono); color: var(--muted); }
+  .term pre { margin: 0; padding: 16px 18px; font: .8rem/1.85 var(--mono); color: #C3CAF5; white-space: pre; overflow-x: auto; }
+  .term .c { color: var(--violet); filter: brightness(1.4); } .term .ok { color: #4ADE80; } .term .warn { color: var(--amber); } .term .mut { color: var(--muted); }
+  @media (max-width: 899px) { .proj-visual { border-right: 0; border-bottom: 1px solid var(--line); min-height: 0; padding: 24px; } .proj-body { padding: 26px; } }
+
+  /* Process */
+  .steps { gap: 16px; }
+  .steps li { border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.01)); position: relative; }
+  .steps li::before { content: "0" counter(s); font: 700 2.4rem var(--display); letter-spacing: -.04em; margin-bottom: 14px;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* Stack */
+  .stack-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .stack-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .stack-grid { grid-template-columns: repeat(3, 1fr); } }
+  .stack-grid .card-x { padding: 24px; }
+  .stack-grid h3 { font: 600 1rem var(--display); margin: 0 0 14px; }
+  .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips li { font-size: .85rem; padding: 6px 12px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: #D5DAFB; }
+
+  /* Contact */
+  .contact { padding: 60px 0 120px; }
+  .cta-card { position: relative; text-align: center; padding: clamp(40px, 7vw, 84px) clamp(22px, 5vw, 64px); border-radius: 32px; overflow: hidden;
+    border: 1px solid var(--line-2); background: radial-gradient(ellipse 80% 90% at 50% 0%, rgba(139,107,255,.32), transparent 70%), linear-gradient(160deg, rgba(20,26,80,.85), rgba(8,10,34,.9)); }
+  .cta-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 40px 40px; -webkit-mask-image: radial-gradient(ellipse at top, #000, transparent 70%); mask-image: radial-gradient(ellipse at top, #000, transparent 70%); }
+  .cta-card > * { position: relative; z-index: 1; }
+  .cta-card h2 { font-size: clamp(2rem, 4.4vw, 3.3rem); }
+  .cta-card p { color: var(--muted); max-width: 38rem; margin: 0 auto 30px; font-size: 1.08rem; }
+  .cta-card .actions { justify-content: center; }
+  .cta-card .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px; margin-top: 30px; }
+  .cta-card .links a { color: var(--muted); text-decoration: none; font-size: .92rem; }
+  .cta-card .links a:hover { color: var(--text); }
+  .cta-card .eyebrow { justify-content: center; }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: .88rem; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+  .foot a { color: var(--muted); text-decoration: none; margin-left: 20px; }
+  .foot a:first-child { margin-left: 0; }
+  .foot a:hover { color: var(--text); }
+
+  /* Demo panels get the glass look too */
+  .sys, .engine, .vs > div, .oa, .live .card, .jwt > div:first-child { border-radius: var(--radius) !important; border-color: var(--line) !important; background: linear-gradient(160deg, rgba(255,255,255,.055), rgba(255,255,255,.012)) !important; backdrop-filter: blur(12px); }
+  .log, .code, pre.code, .jwt-str { background: rgba(5,7,26,.7) !important; border-color: var(--line) !important; }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1); transition-delay: var(--d, 0s); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 720px) {
+    .top { top: 8px; }
+    .top .wrap { width: calc(100% - 16px); }
+    .hero { padding-top: 100px; }
+    .hero-facts { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .hero-facts div { padding: 12px; }
+    .hero-facts dt { font-size: 1.15rem; }
+    .sec { padding: 80px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aurora span, .marquee-track, .grad, .status i { animation: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
 
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top">Astha P. Shukla</a>
+    <a class="brand" href="#top"><span class="logo" aria-hidden="true">AS</span>Astha P. Shukla</a>
     <nav class="nav" aria-label="Main">
-      <a href="#sync">Live sync</a>
-      <a href="#auth">Auth</a>
       <a href="#services">Services</a>
       <a href="#work">Projects</a>
-      <a class="btn small" href="#contact">Hire me</a>
+      <a href="#sync">Demos</a>
+      <a href="#process">Process</a>
+      <a class="btn small" href="#contact">Hire me <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
     </nav>
   </div>
 </header>
@@ -401,42 +598,51 @@
   <section class="hero">
     <div class="wrap">
       <div>
-        <p class="status"><i aria-hidden="true"></i>Available for freelance projects</p>
-        <h1>I make your business tools talk to each other.</h1>
-        <p class="lede">I'm a backend and integration engineer. I build two-way syncs between Shopify, WooCommerce, HubSpot, Dynamics 365 and Business Central, with secure sign-in and retries that fix failures on their own.</p>
+        <p class="status"><i aria-hidden="true"></i>Available for freelance work &amp; full-time remote roles</p>
+        <h1>I make your business tools <span class="grad">talk to each other.</span></h1>
+        <p class="lede">Backend &amp; integration engineer with 4.8 years of production experience. I build reliable two-way syncs between Shopify, WooCommerce, HubSpot, Dynamics 365 and Business Central, with secure auth and retries that fix failures on their own.</p>
         <div class="actions">
-          <a class="btn" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Start a project</a>
-          <a class="btn ghost" href="#sync">Try the live demos</a>
+          <a class="btn glow" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Start a project <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
+          <a class="btn ghost" href="#work">See my work</a>
         </div>
         <dl class="hero-facts">
-          <div><dt>5 years</dt><dd>building production integrations</dd></div>
-          <div><dt>Two-way sync</dt><dd>with conflict handling</dd></div>
-          <div><dt>OAuth 2.0 + JWT</dt><dd>secure by design</dd></div>
+          <div><dt><span class="count" data-to="4.8" data-dec="1">4.8</span> yrs</dt><dd>production integrations</dd></div>
+          <div><dt><span class="count" data-to="5">5</span></dt><dd>platforms I integrate</dd></div>
+          <div><dt>OAuth&nbsp;2.0</dt><dd>+ JWT, secure by design</dd></div>
         </dl>
       </div>
 
-      <div class="net-box">
+      <div class="net-box glass">
         <canvas id="net" role="img" aria-label="Animated diagram. Data flows both ways between stores (Shopify, WooCommerce) and business systems (HubSpot, Dynamics 365, Business Central) through a queue. A failed delivery pauses and retries on its own."></canvas>
         <p class="net-info" id="net-info" aria-live="polite"><strong>Simulation.</strong> Data flows both ways through a queue: cyan dots start on the store side, amber dots on the CRM and ERP side. If an app is down, the delivery waits and retries on its own. Select a node to see what I connect.</p>
       </div>
     </div>
   </section>
 
+  <div class="marquee" aria-label="Platforms I work with">
+    <div class="marquee-track">
+      <span>Shopify</span><span>WooCommerce</span><span>HubSpot</span><span>Dynamics 365</span><span>Business Central</span><span>Node.js</span><span>TypeScript</span><span>Redis</span><span>BullMQ</span><span>PostgreSQL</span><span>Docker</span><span>AWS</span><span>OAuth 2.0</span><span>GraphQL</span>
+      <span aria-hidden="true">Shopify</span><span aria-hidden="true">WooCommerce</span><span aria-hidden="true">HubSpot</span><span aria-hidden="true">Dynamics 365</span><span aria-hidden="true">Business Central</span><span aria-hidden="true">Node.js</span><span aria-hidden="true">TypeScript</span><span aria-hidden="true">Redis</span><span aria-hidden="true">BullMQ</span><span aria-hidden="true">PostgreSQL</span><span aria-hidden="true">Docker</span><span aria-hidden="true">AWS</span><span aria-hidden="true">OAuth 2.0</span><span aria-hidden="true">GraphQL</span>
+    </div>
+  </div>
+
   <section class="sec" id="results">
     <div class="wrap">
-      <h2>Results from 5 years of production work</h2>
-      <p class="sec-intro">Integrations that run unattended are what I'm good at. These are outcomes from systems I built and maintained.</p>
-      <div class="results">
-        <div class="result"><b>1-2 min to 2-3 s</b><span>Dashboard API response time after caching work</span></div>
-        <div class="result"><b>5 parallel workers</b><span>Used to sync large, variant-heavy product catalogs</span></div>
-        <div class="result"><b>Automatic retries</b><span>Failed workflows retry with backoff, then alert the owner</span></div>
-        <div class="result"><b>Anomaly alerts</b><span>Monitoring that flags unusual drops or spikes in sync volume</span></div>
+      <p class="eyebrow">Results</p>
+      <h2>Outcomes from years of production work</h2>
+      <p class="sec-intro">Integrations that run unattended are what I'm good at. These come from systems I built and maintained.</p>
+      <div class="results bento">
+        <div class="result card-x wide"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span><b class="big">1–2 min <em>→</em> 2–3 s</b><span>Dashboard API response time after caching work</span></div>
+        <div class="result card-x"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg></span><b>5 parallel workers</b><span>Syncing large, variant-heavy product catalogs</span></div>
+        <div class="result card-x"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg></span><b>Self-healing retries</b><span>Failed workflows retry with backoff, then alert the owner</span></div>
+        <div class="result card-x"><span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><b>Anomaly alerts</b><span>Monitoring that flags unusual drops or spikes in sync volume</span></div>
       </div>
     </div>
   </section>
 
   <section class="sec" id="live" hidden>
     <div class="wrap">
+      <p class="eyebrow">Live demo</p>
       <h2>Real integration, running now <span class="badge-live">Live</span></h2>
       <p class="sec-intro">This isn't an animation. The button creates a real order in my Shopify development store. Shopify sends a signed webhook to my server, the job goes into a Redis queue, and a worker creates a real contact and deal in HubSpot. You watch every step as it happens. The customer is invented; nothing about you is collected.</p>
 
@@ -463,6 +669,7 @@
 
   <section class="sec" id="sync">
     <div class="wrap">
+      <p class="eyebrow">Interactive demo</p>
       <h2>Two-way sync, simulated</h2>
       <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. This is a simulation that runs in your browser, so try to break it.</p>
 
@@ -520,6 +727,7 @@
 
   <section class="sec" id="auth">
     <div class="wrap">
+      <p class="eyebrow">Security</p>
       <h2>Secure sign-in, explained</h2>
       <p class="sec-intro">Two terms get mixed up all the time. OAuth 2.0 is the process that lets one app act for you without ever seeing your password. A JWT is a signed token that proves who you are and what you're allowed to do. I use both in production integrations.</p>
 
@@ -604,103 +812,103 @@
 
   <section class="sec" id="services">
     <div class="wrap">
+      <p class="eyebrow">Services</p>
       <h2>What I can build for you</h2>
-      <p class="sec-intro">Open a service to see what's included.</p>
-      <div class="services">
-        <details>
-          <summary>Connect the tools you already use</summary>
-          <div class="svc-body">
-            <p>Keep your store, CRM and ERP in step, so nobody copies data between systems by hand.</p>
-            <ul>
-              <li>Shopify and WooCommerce to HubSpot, Dynamics 365 or Business Central</li>
-              <li>One-way or two-way sync of orders, customers, products and stock</li>
-              <li>Duplicate protection and clear logs when something goes wrong</li>
-            </ul>
-          </div>
-        </details>
-        <details>
-          <summary>Backend APIs and automation</summary>
-          <div class="svc-body">
-            <p>Secure, documented back ends that handle heavy workloads without slowing down.</p>
-            <ul>
-              <li>REST and GraphQL APIs with login, validation and rate limiting</li>
-              <li>Webhooks and background jobs for slow or large tasks</li>
-              <li>Swagger documentation and Docker-based deployment</li>
-            </ul>
-          </div>
-        </details>
-        <details>
-          <summary>Online store and marketplace sync</summary>
-          <div class="svc-body">
-            <p>Publish products to other sales channels and keep stock accurate everywhere.</p>
-            <ul>
-              <li>Product, price and inventory updates across channels</li>
-              <li>Bulk processing for large catalogs</li>
-              <li>Order and stock updates in real time through webhooks</li>
-            </ul>
-          </div>
-        </details>
-        <details>
-          <summary>Business websites</summary>
-          <div class="svc-body">
-            <p>Fast, clean websites that connect to the systems you already run.</p>
-            <ul>
-              <li>Lead forms that go straight into your CRM</li>
-              <li>Mobile-friendly layouts and quick load times</li>
-              <li>Hosting setup and handover</li>
-            </ul>
-          </div>
-        </details>
+      <p class="sec-intro">From a single webhook to a full two-way sync between your store, CRM and ERP.</p>
+      <div class="services-grid">
+        <article class="svc card-x wide">
+          <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>
+          <h3>Connect the tools you already use</h3>
+          <p>Keep your store, CRM and ERP in step, so nobody copies data between systems by hand.</p>
+          <ul class="checks-list">
+            <li>Shopify and WooCommerce to HubSpot, Dynamics 365 or Business Central</li>
+            <li>One-way or two-way sync of orders, customers, products and stock</li>
+            <li>Duplicate protection and clear logs when something goes wrong</li>
+          </ul>
+        </article>
+        <article class="svc card-x">
+          <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m8 10-2 2 2 2"/><path d="m16 10 2 2-2 2"/><path d="m13 9-2 6"/></svg></span>
+          <h3>Backend APIs &amp; automation</h3>
+          <p>Secure, documented back ends that handle heavy workloads without slowing down.</p>
+          <ul class="checks-list">
+            <li>REST &amp; GraphQL APIs with auth, validation, rate limits</li>
+            <li>Webhooks and background jobs</li>
+            <li>Swagger docs and Docker deployment</li>
+          </ul>
+        </article>
+        <article class="svc card-x">
+          <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2.6l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21.5 8H6"/></svg></span>
+          <h3>Store &amp; marketplace sync</h3>
+          <p>Publish products to other channels and keep stock accurate everywhere.</p>
+          <ul class="checks-list">
+            <li>Product, price and inventory updates</li>
+            <li>Bulk processing for large catalogs</li>
+            <li>Real-time order and stock webhooks</li>
+          </ul>
+        </article>
+        <article class="svc card-x wide">
+          <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span>
+          <h3>Business websites &amp; Shopify apps</h3>
+          <p>Fast, clean websites and custom Shopify apps that connect to the systems you already run.</p>
+          <ul class="checks-list">
+            <li>Lead forms that go straight into your CRM</li>
+            <li>Mobile-first layouts and quick load times</li>
+            <li>Custom Shopify apps with Polaris and App Bridge</li>
+          </ul>
+        </article>
       </div>
     </div>
   </section>
 
   <section class="sec" id="work">
     <div class="wrap">
+      <p class="eyebrow">Selected work</p>
       <h2>Projects</h2>
-      <p class="sec-intro">Original demos built on free developer accounts and a built-in test store. Each one shows how I approach reliability, and each comes with automated tests.</p>
-      <article class="project">
-        <div>
-          <h3>Shopify to HubSpot order sync</h3>
-          <p>Every new Shopify order becomes a HubSpot contact and a closed-won deal, automatically. Store owners stop copying order data into their CRM by hand.</p>
-          <ul class="tags" aria-label="Technologies used">
-            <li>Node.js</li><li>TypeScript</li><li>BullMQ</li><li>Redis</li><li>Docker</li><li>HubSpot API</li>
-          </ul>
-          <a class="btn" href="https://github.com/asthapandey06/shopify-hubspot-sync" target="_blank" rel="noopener">View on GitHub</a>
-        </div>
-        <ul class="facts">
-          <li>Checks every webhook's signature, so only Shopify can trigger a sync</li>
-          <li>Replies to Shopify instantly and does the work in a queue</li>
-          <li>Ignores duplicate webhooks and never creates duplicate deals</li>
-          <li>Retries temporary errors with backoff and stops retrying bad data</li>
-        </ul>
-      </article>
-      <div class="minis">
-        <article class="mini">
-          <h3>Integration starter kit</h3>
-          <p>The plumbing every integration needs, done properly once: OAuth login, encrypted tokens, safe refreshes, retries and rate limits.</p>
-          <ul class="facts">
-            <li>Tokens encrypted at rest, with key rotation</li>
-            <li>Ten parallel requests cause exactly one token refresh</li>
-            <li>Refreshes once on a 401, backs off on 429 and 5xx</li>
-          </ul>
-          <ul class="tags" aria-label="Technologies used">
-            <li>Node.js</li><li>TypeScript</li><li>OAuth 2.0</li><li>Redis</li><li>AES-256-GCM</li>
-          </ul>
-          <a class="btn ghost" href="https://github.com/asthapandey06/integration-starter-kit" target="_blank" rel="noopener">View on GitHub</a>
+      <p class="sec-intro">Original builds on developer accounts and test stores. Each one shows how I approach reliability, and each comes with automated tests.</p>
+      <div class="proj-grid">
+        <article class="proj card-x feature">
+          <div class="proj-visual" aria-hidden="true">
+            <div class="term"><div class="term-bar"><i></i><i></i><i></i><span>worker.log</span></div>
+<pre><span class="c">[webhook]</span> orders/create  <span class="ok">HMAC ✓</span>
+<span class="c">[queue]</span>   job 7f3c queued  <span class="mut">attempt 1/5</span>
+<span class="c">[hubspot]</span> 429 rate limited  <span class="warn">retry in 2s</span>
+<span class="c">[hubspot]</span> contact upserted <span class="ok">#118230451</span>
+<span class="c">[hubspot]</span> deal created     <span class="ok">#40211877</span>
+<span class="ok">✓ synced in 3.1s</span></pre></div>
+          </div>
+          <div class="proj-body">
+            <p class="kicker">Integration · Featured</p>
+            <h3>Shopify → HubSpot order sync</h3>
+            <p>Every new Shopify order becomes a HubSpot contact and a closed-won deal, automatically. Store owners stop copying order data into their CRM by hand.</p>
+            <ul class="checks-list">
+              <li>Verifies every webhook signature, so only Shopify can trigger a sync</li>
+              <li>Acknowledges instantly and does the work in a queue</li>
+              <li>Never creates duplicates; retries temporary errors with backoff</li>
+            </ul>
+            <ul class="tags" aria-label="Technologies used"><li>Node.js</li><li>TypeScript</li><li>BullMQ</li><li>Redis</li><li>Docker</li><li>HubSpot API</li></ul>
+            <a class="btn" href="https://github.com/asthapandey06/shopify-hubspot-sync" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0C17.3 4.8 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg> View code</a>
+          </div>
         </article>
-        <article class="mini">
+        <article class="proj card-x">
+          <p class="kicker">Shopify app</p>
+          <h3>PriceTide</h3>
+          <p>Schedule sales on products or collections. Prices drop at the start time and every price is restored exactly when the sale ends.</p>
+          <ul class="tags" aria-label="Technologies used"><li>React Router</li><li>Prisma</li><li>Polaris</li><li>App Bridge</li><li>TypeScript</li></ul>
+          <a class="link-arrow" href="https://github.com/asthapandey06/shopify-sale-scheduler" target="_blank" rel="noopener">View code <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
+        </article>
+        <article class="proj card-x">
+          <p class="kicker">Toolkit</p>
+          <h3>Integration starter kit</h3>
+          <p>OAuth login, encrypted tokens, safe refreshes, retries and rate limits, done properly once. Ten parallel requests cause exactly one token refresh.</p>
+          <ul class="tags" aria-label="Technologies used"><li>Node.js</li><li>TypeScript</li><li>OAuth 2.0</li><li>Redis</li><li>AES-256-GCM</li></ul>
+          <a class="link-arrow" href="https://github.com/asthapandey06/integration-starter-kit" target="_blank" rel="noopener">View code <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
+        </article>
+        <article class="proj card-x">
+          <p class="kicker">Data pipeline</p>
           <h3>Catalog sync for WooCommerce</h3>
           <p>Upload a product CSV and watch it sync live. Bad rows are reported by line number, and re-running a file never creates duplicates.</p>
-          <ul class="facts">
-            <li>Validates every row and explains each problem</li>
-            <li>Chunks processed by parallel workers, one batch call per chunk</li>
-            <li>Creates new products and updates existing ones</li>
-          </ul>
-          <ul class="tags" aria-label="Technologies used">
-            <li>Node.js</li><li>TypeScript</li><li>BullMQ</li><li>Redis</li><li>WooCommerce API</li>
-          </ul>
-          <a class="btn ghost" href="https://github.com/asthapandey06/catalog-sync" target="_blank" rel="noopener">View on GitHub</a>
+          <ul class="tags" aria-label="Technologies used"><li>Node.js</li><li>TypeScript</li><li>BullMQ</li><li>Redis</li><li>WooCommerce API</li></ul>
+          <a class="link-arrow" href="https://github.com/asthapandey06/catalog-sync" target="_blank" rel="noopener">View code <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
         </article>
       </div>
     </div>
@@ -708,6 +916,7 @@
 
   <section class="sec" id="process">
     <div class="wrap">
+      <p class="eyebrow">Process</p>
       <h2>How we'd work together</h2>
       <p class="sec-intro">A clear scope and a fixed price, so you know what you're getting before work starts.</p>
       <ol class="steps">
@@ -721,24 +930,21 @@
 
   <section class="sec" id="stack">
     <div class="wrap">
+      <p class="eyebrow">Stack</p>
       <h2>Tools I use</h2>
       <p class="sec-intro">Chosen for reliability, not novelty.</p>
-      <dl class="stack">
-        <div><dt>Languages and frameworks</dt><dd>TypeScript, Node.js, Express, PHP (Phalcon, Laravel)</dd></div>
-        <div><dt>Data and queues</dt><dd>PostgreSQL, MongoDB, Redis, BullMQ</dd></div>
-        <div><dt>APIs and security</dt><dd>REST, GraphQL, webhooks, OAuth 2.0, JWT, encrypted token storage</dd></div>
-        <div><dt>Platforms</dt><dd>HubSpot, Microsoft Dynamics 365, Business Central, Shopify, WooCommerce</dd></div>
-        <div><dt>Cloud and delivery</dt><dd>Docker, AWS (S3, SQS, DynamoDB), PM2, Git, GitHub</dd></div>
-      </dl>
+      <div class="stack-grid"><div class="card-x"><h3>Languages &amp; frameworks</h3><ul class="chips"><li>TypeScript</li><li>Node.js</li><li>Express</li><li>PHP</li><li>Laravel</li><li>React</li></ul></div><div class="card-x"><h3>Data &amp; queues</h3><ul class="chips"><li>PostgreSQL</li><li>MongoDB</li><li>Redis</li><li>BullMQ</li><li>Prisma</li></ul></div><div class="card-x"><h3>APIs &amp; security</h3><ul class="chips"><li>REST</li><li>GraphQL</li><li>Webhooks</li><li>OAuth 2.0</li><li>JWT</li><li>Encrypted tokens</li></ul></div><div class="card-x"><h3>Platforms</h3><ul class="chips"><li>HubSpot</li><li>Dynamics 365</li><li>Business Central</li><li>Shopify</li><li>WooCommerce</li></ul></div><div class="card-x"><h3>Cloud &amp; delivery</h3><ul class="chips"><li>Docker</li><li>AWS S3</li><li>AWS SQS</li><li>DynamoDB</li><li>PM2</li><li>GitHub Actions</li></ul></div></div>
     </div>
   </section>
 
   <section class="contact" id="contact">
     <div class="wrap">
-      <h2>Have systems that need to work together?</h2>
-      <p>Tell me which tools you use and what's slow or manual today. I'll reply with a plan and a price.</p>
+      <div class="cta-card">
+      <p class="eyebrow">Let's talk</p>
+      <h2>Have systems that need to <span class="grad">work together?</span></h2>
+      <p>Tell me which tools you use and what's slow or manual today. I'll reply with a plan and a fixed price. Hiring for a full-time remote role? I'd love to hear about it too.</p>
       <div class="actions">
-        <a class="btn" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Email me</a>
+        <a class="btn glow" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Email me <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
         <a class="btn ghost" href="https://www.linkedin.com/in/astha-p-shukla-b398b2213" target="_blank" rel="noopener">Message on LinkedIn</a>
       </div>
       <div class="links">
@@ -746,12 +952,13 @@
         <a href="https://github.com/asthapandey06" target="_blank" rel="noopener">github.com/asthapandey06</a>
         <a href="https://www.linkedin.com/in/astha-p-shukla-b398b2213" target="_blank" rel="noopener">LinkedIn</a>
       </div>
+      </div>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap">&copy; 2026 Astha P. Shukla. Based in Lucknow, India. Working with clients worldwide.</div>
+  <div class="wrap foot"><span>&copy; 2026 Astha P. Shukla · Lucknow, India · Working with clients worldwide</span><span><a href="https://github.com/asthapandey06">GitHub</a><a href="https://www.linkedin.com/in/astha-p-shukla-b398b2213">LinkedIn</a><a href="mailto:astha.61097@gmail.com">Email</a></span></div>
 </footer>
 
 <script>
@@ -1570,6 +1777,40 @@
   });
 
   status();
+})();
+</script>
+<script>
+/* Modern UI behaviours: scroll progress, nav state, reveal, card spotlight */
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const bar = document.getElementById('progress'), top = document.querySelector('.top');
+  const onScroll = () => {
+    const h = document.documentElement; const p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+    bar.style.width = (p * 100).toFixed(2) + '%'; top.classList.toggle('scrolled', h.scrollTop > 20);
+  };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  const links = [...document.querySelectorAll('.nav a[href^="#"]:not(.btn)')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const navIO = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  secs.forEach(s => navIO.observe(s));
+
+  if (!reduce && 'IntersectionObserver' in window) {
+    const targets = document.querySelectorAll('.sec h2, .sec .eyebrow, .sec-intro, .card-x, .steps li, .hero .wrap > *, .cta-card');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 });
+    targets.forEach(t => {
+      const sib = t.parentElement ? [...t.parentElement.children].indexOf(t) : 0;
+      if (t.matches('.card-x, .steps li')) t.style.setProperty('--d', Math.min(sib, 5) * 0.07 + 's');
+      t.classList.add('reveal'); io.observe(t);
+    });
+  }
+
+  document.querySelectorAll('.card-x').forEach(c => c.addEventListener('pointermove', e => {
+    const r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
 })();
 </script>
 </body>
