@@ -356,6 +356,29 @@
     html { scroll-behavior: auto; }
     * { transition: none !important; }
   }
+
+  /* ---------- Live demo (real APIs) ---------- */
+  .live { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 20px; }
+  @media (max-width: 860px) { .live { grid-template-columns: 1fr; } }
+  .live .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+  .live h3 { font-family: var(--display); font-size: 1.05rem; margin: 0 0 10px; }
+  .live .pill { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); }
+  .live .pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .live .pill.on i { background: #4ADE80; box-shadow: 0 0 0 4px rgba(74, 222, 128, .15); }
+  .live .pill.off i { background: var(--coral); }
+  .live .opt { display: flex; gap: 10px; align-items: flex-start; color: var(--muted); font-size: 0.92rem; margin: 16px 0; }
+  .live .opt input { margin-top: 5px; accent-color: var(--cyan); }
+  .live .order { margin-top: 16px; padding: 14px; border-radius: 12px; background: var(--panel-2); font-size: 0.92rem; display: none; }
+  .live .order b { color: var(--text); }
+  .live .numbers { display: flex; gap: 22px; margin-top: 18px; color: var(--muted); font-size: 0.85rem; }
+  .live .numbers b { display: block; font-family: var(--display); font-size: 1.3rem; color: var(--text); }
+  .live p.msg { margin: 12px 0 0; font-size: 0.92rem; font-weight: 500; color: var(--amber); opacity: 1; min-height: 1.4em; }
+  .live p.msg.ok { color: #4ADE80; }
+  .log li.retry::before { background: var(--amber); }
+  .log li.done::before { background: var(--cyan); }
+  .log li .d { display: block; color: var(--muted); font-size: 0.82rem; word-break: break-word; }
+  .live .log { max-height: 360px; }
+  .badge-live { display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #04132a; background: #4ADE80; border-radius: 6px; padding: 2px 8px; margin-left: 10px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -412,10 +435,36 @@
     </div>
   </section>
 
+  <section class="sec" id="live" hidden>
+    <div class="wrap">
+      <h2>Real integration, running now <span class="badge-live">Live</span></h2>
+      <p class="sec-intro">This isn't an animation. The button creates a real order in my Shopify development store. Shopify sends a signed webhook to my server, the job goes into a Redis queue, and a worker creates a real contact and deal in HubSpot. You watch every step as it happens. The customer is invented; nothing about you is collected.</p>
+
+      <div class="live">
+        <div class="card">
+          <span class="pill" id="live-pill"><i></i><span>Checking server…</span></span>
+          <label class="opt"><input type="checkbox" id="live-outage"> <span>Simulate a HubSpot outage on the first attempt, so you can watch the automatic retry with backoff</span></label>
+          <button class="btn" id="live-go" type="button" disabled>Place a test order</button>
+          <p class="msg" id="live-msg" role="status"></p>
+          <div class="order" id="live-order"></div>
+          <div class="numbers">
+            <div><b id="live-synced">–</b>orders synced</div>
+            <div><b id="live-retries">–</b>automatic retries</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>What's happening</h3>
+          <ul class="log" id="live-log" role="log" aria-live="polite" aria-label="Live sync steps"><li><span>Place an order to see the real sync steps here.</span></li></ul>
+          <p class="pill" style="margin-top:12px">Source: <a href="https://github.com/asthapandey06/shopify-hubspot-sync">github.com/asthapandey06/shopify-hubspot-sync</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="sec" id="sync">
     <div class="wrap">
-      <h2>Two-way sync, live</h2>
-      <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. This runs for real in your browser, so try to break it.</p>
+      <h2>Two-way sync, simulated</h2>
+      <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. This is a simulation that runs in your browser, so try to break it.</p>
 
       <div class="sync" id="sync-app">
         <div class="sys" data-side="store">
@@ -1449,6 +1498,78 @@
 
   root.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => act(b.dataset.act)));
   issue();
+})();
+</script>
+<script>
+/* Live demo: talks to the real shopify-hubspot-sync deployment. Set LIVE_API after deploying. */
+(() => {
+  const LIVE_API = ""; // e.g. "https://shopify-hubspot-sync.onrender.com"
+  if (!LIVE_API) return;
+  const $ = (id) => document.getElementById(id);
+  $("live").hidden = false;
+  const pill = $("live-pill"), go = $("live-go"), msg = $("live-msg"), log = $("live-log"), box = $("live-order");
+  const setPill = (cls, text) => { pill.className = "pill " + cls; pill.lastElementChild.textContent = text; };
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const fmt = (ms) => new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+  async function status() {
+    setPill("", "Waking the server (free hosting can take ~50s)…");
+    try {
+      const r = await fetch(LIVE_API + "/demo/status");
+      const s = await r.json();
+      if (!s.enabled) throw new Error("disabled");
+      setPill("on", "Server online · connected to Shopify + HubSpot");
+      $("live-synced").textContent = s.stats.synced ?? 0;
+      $("live-retries").textContent = s.stats.retries ?? 0;
+      go.disabled = false;
+    } catch { setPill("off", "Live demo is offline right now"); }
+  }
+
+  function render(events) {
+    if (!events.length) return;
+    log.innerHTML = events.map((e) =>
+      `<li class="${esc(e.status)}"><time>${fmt(e.t)}</time><span>${esc(e.step)}${e.detail ? `<span class="d">${esc(e.detail)}</span>` : ""}</span></li>`
+    ).join("");
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function follow(orderId) {
+    const started = Date.now();
+    while (Date.now() - started < 120000) {
+      try {
+        const r = await fetch(`${LIVE_API}/demo/orders/${orderId}/events`);
+        const { events } = await r.json();
+        render(events);
+        const last = events[events.length - 1];
+        if (last && (last.status === "done" || last.status === "error")) return last.status;
+      } catch {}
+      await new Promise((res) => setTimeout(res, 1200));
+    }
+    return "timeout";
+  }
+
+  go.addEventListener("click", async () => {
+    go.disabled = true; msg.textContent = ""; msg.classList.remove("ok"); box.style.display = "none";
+    log.innerHTML = '<li><span>Creating the order in Shopify…</span></li>';
+    try {
+      const r = await fetch(LIVE_API + "/demo/orders", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ outage: $("live-outage").checked }),
+      });
+      const o = await r.json();
+      if (!r.ok) throw new Error(o.error || "Something went wrong");
+      box.innerHTML = `<b>Order ${esc(o.name)}</b> · ${esc(o.customerName)} · ${esc(o.product)} · $${esc(o.total)}`;
+      box.style.display = "block";
+      const result = await follow(o.orderId);
+      msg.classList.toggle("ok", result === "done");
+      msg.textContent = result === "done" ? "Done. The contact and deal now exist in HubSpot." :
+        result === "error" ? "The sync failed permanently. That's logged, not lost." : "Still working… Shopify webhooks can take a moment.";
+      status();
+    } catch (e) { msg.textContent = e.message; }
+    finally { go.disabled = false; }
+  });
+
+  status();
 })();
 </script>
 </body>
