@@ -509,6 +509,24 @@
   .car-track .svc { flex: 0 0 clamp(270px, 82%, 380px); scroll-snap-align: start; grid-column: auto !important; transition: transform .3s, border-color .3s, opacity .3s; }
   @media (min-width: 1040px) { .car-track .svc { flex-basis: calc((100% - 36px) / 3); } }
   .car-track:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; border-radius: 20px; }
+
+  .car-count { margin: 0; font: 500 .85rem var(--mono); color: var(--muted); }
+  .car-count b { color: var(--text); }
+  .car-stage { position: relative; }
+  .car-stage .car-btns { display: contents; }
+  .car-btn.side { position: absolute; top: 50%; z-index: 3; width: 52px; height: 52px; margin-top: -38px;
+    background: rgba(12,16,44,.92); border-color: rgba(92,225,255,.45); color: var(--cyan); box-shadow: 0 10px 30px -10px rgba(0,0,0,.8); }
+  .car-btn.side.prev { left: -26px; }
+  .car-btn.side.next { right: -26px; }
+  .car-btn.side:disabled { opacity: 0; pointer-events: none; }
+  .car-btn.side.next:not(:disabled) { animation: nudge 2.4s ease-in-out infinite; }
+  @keyframes nudge { 0%, 70%, 100% { transform: translateX(0); } 80% { transform: translateX(5px); } 90% { transform: translateX(0); } }
+  .car-stage::before, .car-stage::after { content: ""; position: absolute; top: 0; bottom: 24px; width: 34px; z-index: 2; pointer-events: none; transition: opacity .3s; }
+  .car-stage::before { left: 0; background: linear-gradient(90deg, var(--void), transparent); opacity: var(--fade-l, 0); }
+  .car-stage::after { right: 0; background: linear-gradient(-90deg, var(--void), transparent); opacity: var(--fade-r, 1); }
+  @media (max-width: 1240px) { .car-btn.side.prev { left: 6px; } .car-btn.side.next { right: 6px; } }
+  @media (max-width: 600px) { .car-btn.side { width: 44px; height: 44px; margin-top: -34px; } .car-stage::before, .car-stage::after { width: 36px; } }
+  @media (prefers-reduced-motion: reduce) { .car-btn.side.next { animation: none; } }
   .car-progress { height: 2px; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
   .car-progress i { display: block; height: 100%; width: 0; background: var(--cyan); transition: width .2s; }
 
@@ -864,11 +882,13 @@
       <div class="carousel" id="svc-carousel" aria-roledescription="carousel" aria-label="Services">
       <div class="car-head">
         <div class="car-dots" id="svc-dots" role="tablist" aria-label="Choose a service"></div>
-        <div class="car-btns">
-          <button type="button" class="car-btn" id="svc-prev" aria-label="Previous service"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10H4"/><path d="m9 5-5 5 5 5"/></svg></button>
-          <button type="button" class="car-btn" id="svc-next" aria-label="Next service"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></button>
-        </div>
+        <p class="car-count" id="svc-count" aria-live="polite"></p>
       </div>
+      <div class="car-stage">
+        <div class="car-btns">
+          <button type="button" class="car-btn side prev" id="svc-prev" aria-label="Previous service"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 10H4"/><path d="m9 5-5 5 5 5"/></svg></button>
+          <button type="button" class="car-btn side next" id="svc-next" aria-label="Next service"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></button>
+        </div>
       <div class="services-grid car-track" id="svc-track" tabindex="0">
         <article class="svc card-x">
           <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>
@@ -920,6 +940,7 @@
             <li>Custom Shopify apps with Polaris and App Bridge</li>
           </ul>
         </article>
+      </div>
       </div>
       </div>
       <div class="car-progress" aria-hidden="true"><i id="svc-prog"></i></div>
@@ -1898,6 +1919,10 @@
     [...dots.children].forEach((d, k) => d.setAttribute('aria-selected', k === i || (track.scrollLeft >= max - 4 && k === cards.length - 1) ? 'true' : 'false'));
     prev.disabled = track.scrollLeft <= 4; next.disabled = track.scrollLeft >= max - 4;
     prog.style.width = (max > 0 ? Math.max(12, (track.scrollLeft / max) * 100) : 100) + '%';
+    const stage = track.parentElement, vis = Math.max(1, Math.round(track.clientWidth / step()));
+    stage.style.setProperty('--fade-l', track.scrollLeft > 4 ? 1 : 0); stage.style.setProperty('--fade-r', track.scrollLeft < max - 4 ? 1 : 0);
+    const first = Math.min(i + 1, cards.length), last = Math.min(i + vis, cards.length);
+    document.getElementById('svc-count').innerHTML = `<b>${first === last ? first : first + '–' + last}</b> of ${cards.length} services`;
   };
   prev.addEventListener('click', () => go(index() - 1));
   next.addEventListener('click', () => go(index() + 1));
