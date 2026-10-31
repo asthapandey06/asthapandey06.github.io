@@ -480,7 +480,8 @@
 
   /* Services */
   .services-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-  @media (min-width: 860px) { .services-grid { grid-template-columns: repeat(5, 1fr); } .svc { grid-column: span 2; } .svc.wide { grid-column: span 3; } }
+  @media (min-width: 760px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1040px) { .services-grid { grid-template-columns: repeat(3, 1fr); } .svc.wide:first-child { grid-column: span 2; } }
   .svc { padding: 30px; }
   .svc h3 { font: 600 1.3rem var(--display); letter-spacing: -.02em; margin: 0 0 8px; }
   .svc p { color: var(--muted); margin: 0 0 18px; }
@@ -560,6 +561,29 @@
   /* Reveal on scroll */
   .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1); transition-delay: var(--d, 0s); }
   .reveal.in { opacity: 1; transform: none; }
+
+
+  /* Toned-down finish: flatter panels, softer glow */
+  .aurora span { opacity: .14 !important; filter: blur(110px); }
+  .aurora span:nth-child(3) { opacity: .08 !important; }
+  body::before { opacity: .25; }
+  .card-x, .steps li, .hero-facts div, .glass { background: rgba(17, 21, 52, .72) !important; backdrop-filter: none; box-shadow: none; }
+  .card-x::before { display: none; }
+  .card-x:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -18px rgba(0,0,0,.7); border-color: var(--line-2); }
+  .glass { padding: 10px; box-shadow: 0 20px 50px -30px rgba(0,0,0,.8) !important; }
+  .btn.glow { background: var(--cyan); color: #05071A; box-shadow: none; }
+  .btn.glow:hover { background: #8aeaff; box-shadow: none; transform: translateY(-1px); }
+  .grad { animation: none; background: linear-gradient(100deg, #5CE1FF, #9C86FF); -webkit-background-clip: text; background-clip: text; }
+  .hero-facts dt, .result .big, .steps li::before { background: none !important; -webkit-text-fill-color: currentColor; color: var(--text) !important; }
+  .hero-facts dt, .steps li::before { color: var(--cyan) !important; }
+  .logo { background: var(--cyan); }
+  .ic { background: rgba(92,225,255,.08); border-color: rgba(92,225,255,.18); }
+  .proj-visual { background: linear-gradient(160deg, #0E1336, #080B22); }
+  .term { transform: none; }
+  .proj.feature:hover .term { transform: none; }
+  .cta-card { background: linear-gradient(160deg, rgba(22,27,70,.9), rgba(10,12,36,.95)); border-color: var(--line); }
+  .status { background: rgba(74,222,128,.05); }
+  .progress { background: var(--cyan); }
 
   @media (max-width: 720px) {
     .top { top: 8px; }
@@ -814,7 +838,7 @@
     <div class="wrap">
       <p class="eyebrow">Services</p>
       <h2>What I can build for you</h2>
-      <p class="sec-intro">From a single webhook to a full two-way sync between your store, CRM and ERP.</p>
+      <p class="sec-intro">From a single webhook or automated workflow to a full two-way sync between your store, CRM and ERP.</p>
       <div class="services-grid">
         <article class="svc card-x wide">
           <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>
@@ -837,6 +861,16 @@
           </ul>
         </article>
         <article class="svc card-x">
+          <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="15" width="6" height="6" rx="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5"/><path d="M9 6h6"/><path d="M18 9v6"/></svg></span>
+          <h3>Custom workflows &amp; automations</h3>
+          <p>Automate the repetitive steps between your apps, with triggers, rules and alerts built around how your team works.</p>
+          <ul class="checks-list">
+            <li>Event and schedule-based workflows across your tools</li>
+            <li>Approval steps, notifications and reports</li>
+            <li>Error handling, retries and run history</li>
+          </ul>
+        </article>
+        <article class="svc card-x">
           <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2.6l2.4 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21.5 8H6"/></svg></span>
           <h3>Store &amp; marketplace sync</h3>
           <p>Publish products to other channels and keep stock accurate everywhere.</p>
@@ -846,7 +880,7 @@
             <li>Real-time order and stock webhooks</li>
           </ul>
         </article>
-        <article class="svc card-x wide">
+        <article class="svc card-x">
           <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg></span>
           <h3>Business websites &amp; Shopify apps</h3>
           <p>Fast, clean websites and custom Shopify apps that connect to the systems you already run.</p>
