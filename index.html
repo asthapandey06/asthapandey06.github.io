@@ -589,6 +589,19 @@
   .cta-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 40px 40px; -webkit-mask-image: radial-gradient(ellipse at top, #000, transparent 70%); mask-image: radial-gradient(ellipse at top, #000, transparent 70%); }
   .cta-card > * { position: relative; z-index: 1; }
   .cta-card h2 { font-size: clamp(2rem, 4.4vw, 3.3rem); }
+  .cform { display: grid; gap: 8px; max-width: 34rem; margin: 0 auto 28px; text-align: left; }
+  .cform label { font-size: 0.88rem; color: var(--muted); margin-top: 6px; }
+  .cform input, .cform textarea { width: 100%; box-sizing: border-box; font: inherit; color: var(--text); background: rgba(5, 7, 26, 0.6);
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .cform textarea { resize: vertical; min-height: 8em; }
+  .cform input:focus, .cform textarea:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }
+  .cform [aria-invalid="true"] { border-color: #ff6b6b; }
+  .cform .btn { justify-self: start; margin-top: 10px; cursor: pointer; }
+  .cform .btn[disabled] { opacity: 0.6; cursor: progress; }
+  .cf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .cform .cf-status { margin: 4px 0 0; min-height: 1.4em; font-size: 0.92rem; }
+  .cf-status.ok { color: #3ddc97; }
+  .cf-status.err { color: #ff8a8a; }
   .cta-card p { color: var(--muted); max-width: 38rem; margin: 0 auto 30px; font-size: 1.08rem; }
   .cta-card .actions { justify-content: center; }
   .cta-card .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px; margin-top: 30px; }
@@ -1039,6 +1052,15 @@
       <p class="eyebrow">Let's talk</p>
       <h2>Have systems that need to <span class="grad">work together?</span></h2>
       <p>Tell me which tools you use and what's slow or manual today. I'll reply with a plan and a fixed price. Hiring for a full-time remote role? I'd love to hear about it too.</p>
+      <form class="cform" id="contact-form" novalidate>
+        <label for="cf-email">Your email</label>
+        <input id="cf-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" required maxlength="200">
+        <label for="cf-msg">What do you need help with?</label>
+        <textarea id="cf-msg" name="message" rows="5" placeholder="Which tools do you use, and what is slow or manual today?" required minlength="10" maxlength="3000"></textarea>
+        <input type="text" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" class="cf-hp">
+        <button class="btn glow" type="submit" id="cf-send">Send message</button>
+        <p class="cf-status" id="cf-status" role="status" aria-live="polite"></p>
+      </form>
       <div class="actions">
         <a class="btn glow" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Email me <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
         <a class="btn ghost" href="https://www.linkedin.com/in/astha-p-shukla-b398b2213" target="_blank" rel="noopener">Message on LinkedIn</a>
@@ -2056,6 +2078,57 @@
   addEventListener('pointermove', (e) => { if (!down) return; const dx = e.clientX - x0; if (Math.abs(dx) > 4) { moved = true; track.classList.add('dragging'); } track.scrollLeft = s0 - dx; });
   addEventListener('pointerup', () => { if (!down) return; down = false; track.classList.remove('dragging'); if (moved) go(index()); });
   update();
+})();
+</script>
+<script>
+/* ===== Contact form (sends through Web3Forms, no server needed) ===== */
+(() => {
+  // Free access key from https://web3forms.com (enter the email that should receive the messages).
+  // It is safe to publish: it can only send mail to that address. Leave empty to fall back to the visitor's own mail app.
+  const WEB3FORMS_KEY = '';
+  const TO_EMAIL = 'astha.61097@gmail.com';
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+  const email = document.getElementById('cf-email');
+  const msg = document.getElementById('cf-msg');
+  const btn = document.getElementById('cf-send');
+  const status = document.getElementById('cf-status');
+  const say = (text, kind) => { status.textContent = text; status.className = 'cf-status' + (kind ? ' ' + kind : ''); };
+  const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const em = email.value.trim(), body = msg.value.trim();
+    email.setAttribute('aria-invalid', String(!validEmail(em)));
+    msg.setAttribute('aria-invalid', String(body.length < 10));
+    if (!validEmail(em)) { say('Please enter a valid email so I can reply.', 'err'); email.focus(); return; }
+    if (body.length < 10) { say('Please write a few words about what you need.', 'err'); msg.focus(); return; }
+    if (form.elements.botcheck.value) return; // a bot filled the hidden field
+
+    if (!WEB3FORMS_KEY) {
+      const href = 'mailto:' + TO_EMAIL + '?subject=' + encodeURIComponent('Project enquiry') + '&body=' + encodeURIComponent(body + '\n\nReply to: ' + em);
+      say('Opening your email app with the message filled in.', 'ok');
+      location.href = href;
+      return;
+    }
+    btn.disabled = true; say('Sending…');
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 12000);
+    try {
+      const r = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST', signal: ctl.signal,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: 'Portfolio enquiry from ' + em, from_name: 'Portfolio contact form', email: em, message: body, botcheck: '' })
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.success) throw new Error(j.message || 'status ' + r.status);
+      form.reset();
+      email.removeAttribute('aria-invalid'); msg.removeAttribute('aria-invalid');
+      say('Thanks! Your message is on its way. I will reply to ' + em + ' soon.', 'ok');
+    } catch (err) {
+      say('Sorry, that did not send. Please email me at ' + TO_EMAIL + ' instead.', 'err');
+    } finally { clearTimeout(t); btn.disabled = false; }
+  });
 })();
 </script>
 </body>
