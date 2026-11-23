@@ -1276,7 +1276,7 @@
     crm: { label: 'CRM', brand: 'HubSpot', color: 'amber' }
   };
   const TIERS = ['Bronze', 'Silver', 'Gold'];
-  const PEOPLE = [
+  let PEOPLE = [
     { id: 'ava', name: 'Ava Patel', tier: 'Silver' },
     { id: 'ben', name: 'Ben Okafor', tier: 'Bronze' },
     { id: 'chloe', name: 'Chloe Martin', tier: 'Gold' }
@@ -1288,6 +1288,7 @@
 
   let gen = 0, uid = 0, lastTs = 0, userTouched = false, policy = 'newest';
   let sys, baseline, queue, echo, stats;
+  let remote = false, engineUrl = '', source = null, wasDown = false;
 
   const ui = { store: {}, crm: {} };
   const links = { store: document.getElementById('link-l'), crm: document.getElementById('link-r') };
@@ -1297,8 +1298,11 @@
   const statEls = {};
   root.querySelectorAll('[data-stat]').forEach(el => { statEls[el.dataset.stat] = el; });
 
-  ['store', 'crm'].forEach(side => {
+  function buildRows() {
+   ['store', 'crm'].forEach(side => {
     const ul = document.getElementById('rows-' + side);
+    ul.innerHTML = '';
+    ui[side] = {};
     PEOPLE.forEach(p => {
       const li = document.createElement('li');
       const who = document.createElement('span');
@@ -1312,7 +1316,9 @@
       ul.appendChild(li);
       ui[side][p.id] = { li, sel };
     });
-  });
+   });
+  }
+  buildRows();
 
   const tick = () => (lastTs = Math.max(lastTs + 1, Date.now()));
   const later = (fn, ms) => { const g = gen; return setTimeout(() => { if (g === gen) fn(); }, ms); };
@@ -1373,7 +1379,7 @@
     ['store', 'crm'].forEach(side => {
       PEOPLE.forEach(p => {
         const u = ui[side][p.id];
-        u.sel.value = sys[side].data[p.id].tier;
+        u.sel.value = (sys[side].data[p.id] || { tier: TIERS[0] }).tier;
         u.sel.disabled = !sys[side].online;
       });
       const st = document.getElementById('state-' + side);
@@ -1406,6 +1412,7 @@
 
   // A person changes a value in one of the systems.
   function edit(side, id, tier) {
+    if (remote) { post('/api/systems/' + side + '/customers/' + id, { tier }); return; }
     if (!sys[side].online) { render(); return; }
     if (sys[side].data[id].tier === tier) return;
     const ts = tick();
@@ -1509,6 +1516,7 @@
 
   function toggleOutage() {
     userTouched = true;
+    if (remote) { post('/api/outage', { side: 'crm', online: !sys.crm.online }); return; }
     sys.crm.online = !sys.crm.online;
     if (!sys.crm.online) {
       log('HubSpot went down. Changes will wait in the queue.', 'error');
@@ -1521,6 +1529,7 @@
 
   function forceConflict() {
     userTouched = true;
+    if (remote) { post('/api/conflict', {}); return; }
     if (!sys.crm.online || !sys.store.online) { log('End the outage first, then force a conflict.', 'error'); return; }
     const id = 'ava';
     const options = TIERS.filter(t => t !== baseline[id].tier);
@@ -1531,9 +1540,10 @@
 
   document.getElementById('btn-conflict').addEventListener('click', forceConflict);
   outageBtn.addEventListener('click', toggleOutage);
-  document.getElementById('btn-reset').addEventListener('click', () => { userTouched = true; init(); log('Reset. Both systems match again.', 'info'); });
+  document.getElementById('btn-reset').addEventListener('click', () => { userTouched = true; if (remote) { post('/api/reset', {}); return; } init(); log('Reset. Both systems match again.', 'info'); });
   document.getElementById('policy').addEventListener('change', e => {
     policy = e.target.value;
+    if (remote) { post('/api/policy', { policy }); return; }
     log('Conflict rule set to: ' + POLICY_TEXT[policy] + '.', 'info');
   });
 
@@ -1543,13 +1553,109 @@
     later(() => { if (!userTouched) edit('crm', 'ben', 'Silver'); }, 4300);
   }
 
-  init();
-  if ('IntersectionObserver' in window && !reduce) {
-    const io = new IntersectionObserver(es => {
-      if (es[0].isIntersecting) { io.disconnect(); autoplay(); }
-    }, { threshold: 0.35 });
-    io.observe(root);
+  /* ---- Remote mode: the same screen, driven by a real engine over HTTP + Server-Sent Events ---- */
+  const badge = document.getElementById('engine-badge');
+  function setBadge(kind, text) {
+    if (!badge) return;
+    badge.className = 'engine-badge' + (kind ? ' ' + kind : '');
+    badge.querySelector('span').textContent = text;
   }
+
+  function engineBase() {
+    try {
+      const q = new URLSearchParams(location.search).get('engine');
+      if (q && /^https?:\/\//.test(q)) return q.replace(/\/+$/, '');
+    } catch (e) { /* ignore */ }
+    return DEFAULT_ENGINE.replace(/\/+$/, '');
+  }
+
+  function post(path, body) {
+    return fetch(engineUrl + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(r => {
+        if (r.status === 429) throw new Error('too many changes, slow down a little');
+        if (!r.ok) throw new Error('engine answered ' + r.status);
+      })
+      .catch(err => { log('The engine did not accept that: ' + err.message + '.', 'error'); render(); });
+  }
+
+  function applySnapshot(snap, animate) {
+    const prev = sys;
+    SIDES.store.brand = snap.names.store;
+    SIDES.crm.brand = snap.names.crm;
+    root.querySelectorAll('[data-side="store"] .brand').forEach(el => { el.textContent = snap.names.store; });
+    root.querySelectorAll('[data-side="crm"] .brand').forEach(el => { el.textContent = snap.names.crm; });
+    const same = snap.customers.length === PEOPLE.length && snap.customers.every((c, i) => c.alias === PEOPLE[i].id);
+    if (!same) {
+      PEOPLE = snap.customers.map(c => ({ id: c.alias, name: c.name, tier: 'Bronze' }));
+      buildRows();
+    }
+    sys = snap.systems;
+    queue = snap.queue;
+    stats = snap.stats;
+    policy = snap.policy;
+    document.getElementById('policy').value = policy;
+    render();
+    if (animate && prev && same) {
+      ['store', 'crm'].forEach(side => PEOPLE.forEach(p => {
+        const a = prev[side].data[p.id], b = sys[side].data[p.id];
+        if (a && b && a.tier !== b.tier) flash(side, p.id, SIDES[side].color);
+      }));
+    }
+  }
+
+  function onRemoteLog(d) {
+    log(d.msg, d.kind);
+    ['store', 'crm'].forEach(side => {
+      const n = SIDES[side].brand;
+      if (d.msg.indexOf('Webhook from ' + n) === 0) fly(side, 'in', SIDES[side].color);
+      else if (d.msg.indexOf('written to ' + n) > -1) fly(side, 'out', SIDES[side].color);
+    });
+  }
+
+  function startRemote(url) {
+    remote = true; engineUrl = url; gen++; // gen++ cancels every local simulator timer
+    logEl.innerHTML = '';
+    return fetch(url + '/api/state').then(r => r.json()).then(snap => {
+      applySnapshot(snap, false);
+      const real = snap.mode === 'live';
+      const label = real ? 'Live engine · connected to real Shopify and HubSpot test accounts' : 'Live engine · running on a server with built-in demo apps';
+      setBadge('live', label);
+      log('Connected to the live engine (' + (real ? 'live mode' : 'demo mode') + ').', 'ok');
+      source = new EventSource(url + '/api/events');
+      source.addEventListener('state', e => { try { applySnapshot(JSON.parse(e.data), true); } catch (err) { /* ignore bad frame */ } });
+      source.addEventListener('log', e => { try { onRemoteLog(JSON.parse(e.data)); } catch (err) { /* ignore bad frame */ } });
+      source.onerror = () => { wasDown = true; setBadge('warn', 'Live engine connection lost · retrying…'); };
+      source.onopen = () => { if (wasDown) { wasDown = false; setBadge('live', label); } };
+    });
+  }
+
+  function fallback(why) {
+    remote = false;
+    setBadge('', 'Simulation in your browser · ' + why);
+    init();
+  }
+
+  function connectEngine() {
+    const url = engineBase();
+    if (!url) { setBadge('', 'Simulation in your browser · no live engine configured'); return Promise.resolve(false); }
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 3000);
+    return fetch(url + '/health', { signal: ctl.signal })
+      .then(r => { clearTimeout(t); if (!r.ok) throw new Error('bad status'); return startRemote(url); })
+      .then(() => true)
+      .catch(() => { clearTimeout(t); fallback('the live engine is offline right now'); return false; });
+  }
+
+  init();
+  connectEngine().then(isRemote => {
+    if (isRemote) return;
+    if ('IntersectionObserver' in window && !reduce) {
+      const io = new IntersectionObserver(es => {
+        if (es[0].isIntersecting) { io.disconnect(); autoplay(); }
+      }, { threshold: 0.35 });
+      io.observe(root);
+    }
+  });
 })();
 
 /* ===== OAuth 2.0 step-through ===== */
