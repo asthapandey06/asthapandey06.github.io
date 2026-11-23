@@ -125,6 +125,14 @@
     font-size: clamp(1.7rem, 3.2vw, 2.35rem); line-height: 1.12; margin: 0 0 14px;
   }
   .sec-intro { color: var(--muted); max-width: 38rem; margin: 0 0 44px; }
+  .engine-badge {
+    display: inline-flex; align-items: center; gap: 8px; margin: -24px 0 28px;
+    padding: 6px 12px; border: 1px solid rgba(42, 49, 112, 0.9); border-radius: 999px;
+    font-size: 0.82rem; color: var(--muted); max-width: 100%;
+  }
+  .engine-badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+  .engine-badge.live i { background: #3ddc97; box-shadow: 0 0 8px #3ddc97; }
+  .engine-badge.warn i { background: #ffb347; }
 
   /* Results */
   .results { display: grid; gap: 28px; grid-template-columns: 1fr; }
@@ -735,7 +743,8 @@
     <div class="wrap">
       <p class="eyebrow">Interactive demo</p>
       <h2>Two-way sync, simulated</h2>
-      <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. This is a simulation that runs in your browser, so try to break it.</p>
+      <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. The badge below says what you are talking to: a real engine running on a server, or, if that is offline, a simulation of the same logic in your browser. Try to break it.</p>
+      <p class="engine-badge" id="engine-badge" role="status"><i></i><span>Checking for the live engine…</span></p>
 
       <div class="sync" id="sync-app">
         <div class="sys" data-side="store">
@@ -1257,6 +1266,10 @@
   const root = document.getElementById('sync-app');
   if (!root) return;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Where the live sync engine runs (see the two-way-sync-engine repo). Leave empty to use the
+  // in-browser simulation, or test with ?engine=http://127.0.0.1:4100 in the page URL.
+  const DEFAULT_ENGINE = '';
 
   const SIDES = {
     store: { label: 'Online store', brand: 'Shopify', color: 'cyan' },
