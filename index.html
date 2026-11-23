@@ -125,6 +125,14 @@
     font-size: clamp(1.7rem, 3.2vw, 2.35rem); line-height: 1.12; margin: 0 0 14px;
   }
   .sec-intro { color: var(--muted); max-width: 38rem; margin: 0 0 44px; }
+  .engine-badge {
+    display: inline-flex; align-items: center; gap: 8px; margin: -24px 0 28px;
+    padding: 6px 12px; border: 1px solid rgba(42, 49, 112, 0.9); border-radius: 999px;
+    font-size: 0.82rem; color: var(--muted); max-width: 100%;
+  }
+  .engine-badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+  .engine-badge.live i { background: #3ddc97; box-shadow: 0 0 8px #3ddc97; }
+  .engine-badge.warn i { background: #ffb347; }
 
   /* Results */
   .results { display: grid; gap: 28px; grid-template-columns: 1fr; }
@@ -581,6 +589,19 @@
   .cta-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px); background-size: 40px 40px; -webkit-mask-image: radial-gradient(ellipse at top, #000, transparent 70%); mask-image: radial-gradient(ellipse at top, #000, transparent 70%); }
   .cta-card > * { position: relative; z-index: 1; }
   .cta-card h2 { font-size: clamp(2rem, 4.4vw, 3.3rem); }
+  .cform { display: grid; gap: 8px; max-width: 34rem; margin: 0 auto 28px; text-align: left; }
+  .cform label { font-size: 0.88rem; color: var(--muted); margin-top: 6px; }
+  .cform input, .cform textarea { width: 100%; box-sizing: border-box; font: inherit; color: var(--text); background: rgba(5, 7, 26, 0.6);
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .cform textarea { resize: vertical; min-height: 8em; }
+  .cform input:focus, .cform textarea:focus { outline: 2px solid var(--cyan); outline-offset: 1px; }
+  .cform [aria-invalid="true"] { border-color: #ff6b6b; }
+  .cform .btn { justify-self: start; margin-top: 10px; cursor: pointer; }
+  .cform .btn[disabled] { opacity: 0.6; cursor: progress; }
+  .cf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .cform .cf-status { margin: 4px 0 0; min-height: 1.4em; font-size: 0.92rem; }
+  .cf-status.ok { color: #3ddc97; }
+  .cf-status.err { color: #ff8a8a; }
   .cta-card p { color: var(--muted); max-width: 38rem; margin: 0 auto 30px; font-size: 1.08rem; }
   .cta-card .actions { justify-content: center; }
   .cta-card .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px; margin-top: 30px; }
@@ -735,7 +756,8 @@
     <div class="wrap">
       <p class="eyebrow">Interactive demo</p>
       <h2>Two-way sync, simulated</h2>
-      <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. This is a simulation that runs in your browser, so try to break it.</p>
+      <p class="sec-intro">Change a customer's tier on either side. The sync engine carries it across, ignores the echo of its own writes, settles conflicts and retries when a system is down. The badge below says what you are talking to: a real engine running on a server, or, if that is offline, a simulation of the same logic in your browser. Try to break it.</p>
+      <p class="engine-badge" id="engine-badge" role="status"><i></i><span>Checking for the live engine…</span></p>
 
       <div class="sync" id="sync-app">
         <div class="sys" data-side="store">
@@ -1030,6 +1052,15 @@
       <p class="eyebrow">Let's talk</p>
       <h2>Have systems that need to <span class="grad">work together?</span></h2>
       <p>Tell me which tools you use and what's slow or manual today. I'll reply with a plan and a fixed price. Hiring for a full-time remote role? I'd love to hear about it too.</p>
+      <form class="cform" id="contact-form" novalidate>
+        <label for="cf-email">Your email</label>
+        <input id="cf-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" required maxlength="200">
+        <label for="cf-msg">What do you need help with?</label>
+        <textarea id="cf-msg" name="message" rows="5" placeholder="Which tools do you use, and what is slow or manual today?" required minlength="10" maxlength="3000"></textarea>
+        <input type="text" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" class="cf-hp">
+        <button class="btn glow" type="submit" id="cf-send">Send message</button>
+        <p class="cf-status" id="cf-status" role="status" aria-live="polite"></p>
+      </form>
       <div class="actions">
         <a class="btn glow" href="mailto:astha.61097@gmail.com?subject=Project%20enquiry">Email me <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"/><path d="m11 5 5 5-5 5"/></svg></a>
         <a class="btn ghost" href="https://www.linkedin.com/in/astha-p-shukla-b398b2213" target="_blank" rel="noopener">Message on LinkedIn</a>
@@ -1258,12 +1289,16 @@
   if (!root) return;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Where the live sync engine runs (see the two-way-sync-engine repo). Leave empty to use the
+  // in-browser simulation, or test with ?engine=http://127.0.0.1:4100 in the page URL.
+  const DEFAULT_ENGINE = '';
+
   const SIDES = {
     store: { label: 'Online store', brand: 'Shopify', color: 'cyan' },
     crm: { label: 'CRM', brand: 'HubSpot', color: 'amber' }
   };
   const TIERS = ['Bronze', 'Silver', 'Gold'];
-  const PEOPLE = [
+  let PEOPLE = [
     { id: 'ava', name: 'Ava Patel', tier: 'Silver' },
     { id: 'ben', name: 'Ben Okafor', tier: 'Bronze' },
     { id: 'chloe', name: 'Chloe Martin', tier: 'Gold' }
@@ -1275,6 +1310,7 @@
 
   let gen = 0, uid = 0, lastTs = 0, userTouched = false, policy = 'newest';
   let sys, baseline, queue, echo, stats;
+  let remote = false, engineUrl = '', source = null, wasDown = false;
 
   const ui = { store: {}, crm: {} };
   const links = { store: document.getElementById('link-l'), crm: document.getElementById('link-r') };
@@ -1284,8 +1320,11 @@
   const statEls = {};
   root.querySelectorAll('[data-stat]').forEach(el => { statEls[el.dataset.stat] = el; });
 
-  ['store', 'crm'].forEach(side => {
+  function buildRows() {
+   ['store', 'crm'].forEach(side => {
     const ul = document.getElementById('rows-' + side);
+    ul.innerHTML = '';
+    ui[side] = {};
     PEOPLE.forEach(p => {
       const li = document.createElement('li');
       const who = document.createElement('span');
@@ -1299,7 +1338,9 @@
       ul.appendChild(li);
       ui[side][p.id] = { li, sel };
     });
-  });
+   });
+  }
+  buildRows();
 
   const tick = () => (lastTs = Math.max(lastTs + 1, Date.now()));
   const later = (fn, ms) => { const g = gen; return setTimeout(() => { if (g === gen) fn(); }, ms); };
@@ -1360,7 +1401,7 @@
     ['store', 'crm'].forEach(side => {
       PEOPLE.forEach(p => {
         const u = ui[side][p.id];
-        u.sel.value = sys[side].data[p.id].tier;
+        u.sel.value = (sys[side].data[p.id] || { tier: TIERS[0] }).tier;
         u.sel.disabled = !sys[side].online;
       });
       const st = document.getElementById('state-' + side);
@@ -1393,6 +1434,7 @@
 
   // A person changes a value in one of the systems.
   function edit(side, id, tier) {
+    if (remote) { post('/api/systems/' + side + '/customers/' + id, { tier }); return; }
     if (!sys[side].online) { render(); return; }
     if (sys[side].data[id].tier === tier) return;
     const ts = tick();
@@ -1496,6 +1538,7 @@
 
   function toggleOutage() {
     userTouched = true;
+    if (remote) { post('/api/outage', { side: 'crm', online: !sys.crm.online }); return; }
     sys.crm.online = !sys.crm.online;
     if (!sys.crm.online) {
       log('HubSpot went down. Changes will wait in the queue.', 'error');
@@ -1508,6 +1551,7 @@
 
   function forceConflict() {
     userTouched = true;
+    if (remote) { post('/api/conflict', {}); return; }
     if (!sys.crm.online || !sys.store.online) { log('End the outage first, then force a conflict.', 'error'); return; }
     const id = 'ava';
     const options = TIERS.filter(t => t !== baseline[id].tier);
@@ -1518,9 +1562,10 @@
 
   document.getElementById('btn-conflict').addEventListener('click', forceConflict);
   outageBtn.addEventListener('click', toggleOutage);
-  document.getElementById('btn-reset').addEventListener('click', () => { userTouched = true; init(); log('Reset. Both systems match again.', 'info'); });
+  document.getElementById('btn-reset').addEventListener('click', () => { userTouched = true; if (remote) { post('/api/reset', {}); return; } init(); log('Reset. Both systems match again.', 'info'); });
   document.getElementById('policy').addEventListener('change', e => {
     policy = e.target.value;
+    if (remote) { post('/api/policy', { policy }); return; }
     log('Conflict rule set to: ' + POLICY_TEXT[policy] + '.', 'info');
   });
 
@@ -1530,13 +1575,109 @@
     later(() => { if (!userTouched) edit('crm', 'ben', 'Silver'); }, 4300);
   }
 
-  init();
-  if ('IntersectionObserver' in window && !reduce) {
-    const io = new IntersectionObserver(es => {
-      if (es[0].isIntersecting) { io.disconnect(); autoplay(); }
-    }, { threshold: 0.35 });
-    io.observe(root);
+  /* ---- Remote mode: the same screen, driven by a real engine over HTTP + Server-Sent Events ---- */
+  const badge = document.getElementById('engine-badge');
+  function setBadge(kind, text) {
+    if (!badge) return;
+    badge.className = 'engine-badge' + (kind ? ' ' + kind : '');
+    badge.querySelector('span').textContent = text;
   }
+
+  function engineBase() {
+    try {
+      const q = new URLSearchParams(location.search).get('engine');
+      if (q && /^https?:\/\//.test(q)) return q.replace(/\/+$/, '');
+    } catch (e) { /* ignore */ }
+    return DEFAULT_ENGINE.replace(/\/+$/, '');
+  }
+
+  function post(path, body) {
+    return fetch(engineUrl + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(r => {
+        if (r.status === 429) throw new Error('too many changes, slow down a little');
+        if (!r.ok) throw new Error('engine answered ' + r.status);
+      })
+      .catch(err => { log('The engine did not accept that: ' + err.message + '.', 'error'); render(); });
+  }
+
+  function applySnapshot(snap, animate) {
+    const prev = sys;
+    SIDES.store.brand = snap.names.store;
+    SIDES.crm.brand = snap.names.crm;
+    root.querySelectorAll('[data-side="store"] .brand').forEach(el => { el.textContent = snap.names.store; });
+    root.querySelectorAll('[data-side="crm"] .brand').forEach(el => { el.textContent = snap.names.crm; });
+    const same = snap.customers.length === PEOPLE.length && snap.customers.every((c, i) => c.alias === PEOPLE[i].id);
+    if (!same) {
+      PEOPLE = snap.customers.map(c => ({ id: c.alias, name: c.name, tier: 'Bronze' }));
+      buildRows();
+    }
+    sys = snap.systems;
+    queue = snap.queue;
+    stats = snap.stats;
+    policy = snap.policy;
+    document.getElementById('policy').value = policy;
+    render();
+    if (animate && prev && same) {
+      ['store', 'crm'].forEach(side => PEOPLE.forEach(p => {
+        const a = prev[side].data[p.id], b = sys[side].data[p.id];
+        if (a && b && a.tier !== b.tier) flash(side, p.id, SIDES[side].color);
+      }));
+    }
+  }
+
+  function onRemoteLog(d) {
+    log(d.msg, d.kind);
+    ['store', 'crm'].forEach(side => {
+      const n = SIDES[side].brand;
+      if (d.msg.indexOf('Webhook from ' + n) === 0) fly(side, 'in', SIDES[side].color);
+      else if (d.msg.indexOf('written to ' + n) > -1) fly(side, 'out', SIDES[side].color);
+    });
+  }
+
+  function startRemote(url) {
+    remote = true; engineUrl = url; gen++; // gen++ cancels every local simulator timer
+    logEl.innerHTML = '';
+    return fetch(url + '/api/state').then(r => r.json()).then(snap => {
+      applySnapshot(snap, false);
+      const real = snap.mode === 'live';
+      const label = real ? 'Live engine · connected to real Shopify and HubSpot test accounts' : 'Live engine · running on a server with built-in demo apps';
+      setBadge('live', label);
+      log('Connected to the live engine (' + (real ? 'live mode' : 'demo mode') + ').', 'ok');
+      source = new EventSource(url + '/api/events');
+      source.addEventListener('state', e => { try { applySnapshot(JSON.parse(e.data), true); } catch (err) { /* ignore bad frame */ } });
+      source.addEventListener('log', e => { try { onRemoteLog(JSON.parse(e.data)); } catch (err) { /* ignore bad frame */ } });
+      source.onerror = () => { wasDown = true; setBadge('warn', 'Live engine connection lost · retrying…'); };
+      source.onopen = () => { if (wasDown) { wasDown = false; setBadge('live', label); } };
+    });
+  }
+
+  function fallback(why) {
+    remote = false;
+    setBadge('', 'Simulation in your browser · ' + why);
+    init();
+  }
+
+  function connectEngine() {
+    const url = engineBase();
+    if (!url) { setBadge('', 'Simulation in your browser · no live engine configured'); return Promise.resolve(false); }
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 3000);
+    return fetch(url + '/health', { signal: ctl.signal })
+      .then(r => { clearTimeout(t); if (!r.ok) throw new Error('bad status'); return startRemote(url); })
+      .then(() => true)
+      .catch(() => { clearTimeout(t); fallback('the live engine is offline right now'); return false; });
+  }
+
+  init();
+  connectEngine().then(isRemote => {
+    if (isRemote) return;
+    if ('IntersectionObserver' in window && !reduce) {
+      const io = new IntersectionObserver(es => {
+        if (es[0].isIntersecting) { io.disconnect(); autoplay(); }
+      }, { threshold: 0.35 });
+      io.observe(root);
+    }
+  });
 })();
 
 /* ===== OAuth 2.0 step-through ===== */
@@ -1937,6 +2078,57 @@
   addEventListener('pointermove', (e) => { if (!down) return; const dx = e.clientX - x0; if (Math.abs(dx) > 4) { moved = true; track.classList.add('dragging'); } track.scrollLeft = s0 - dx; });
   addEventListener('pointerup', () => { if (!down) return; down = false; track.classList.remove('dragging'); if (moved) go(index()); });
   update();
+})();
+</script>
+<script>
+/* ===== Contact form (sends through Web3Forms, no server needed) ===== */
+(() => {
+  // Free access key from https://web3forms.com (enter the email that should receive the messages).
+  // It is safe to publish: it can only send mail to that address. Leave empty to fall back to the visitor's own mail app.
+  const WEB3FORMS_KEY = '';
+  const TO_EMAIL = 'astha.61097@gmail.com';
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+  const email = document.getElementById('cf-email');
+  const msg = document.getElementById('cf-msg');
+  const btn = document.getElementById('cf-send');
+  const status = document.getElementById('cf-status');
+  const say = (text, kind) => { status.textContent = text; status.className = 'cf-status' + (kind ? ' ' + kind : ''); };
+  const validEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const em = email.value.trim(), body = msg.value.trim();
+    email.setAttribute('aria-invalid', String(!validEmail(em)));
+    msg.setAttribute('aria-invalid', String(body.length < 10));
+    if (!validEmail(em)) { say('Please enter a valid email so I can reply.', 'err'); email.focus(); return; }
+    if (body.length < 10) { say('Please write a few words about what you need.', 'err'); msg.focus(); return; }
+    if (form.elements.botcheck.value) return; // a bot filled the hidden field
+
+    if (!WEB3FORMS_KEY) {
+      const href = 'mailto:' + TO_EMAIL + '?subject=' + encodeURIComponent('Project enquiry') + '&body=' + encodeURIComponent(body + '\n\nReply to: ' + em);
+      say('Opening your email app with the message filled in.', 'ok');
+      location.href = href;
+      return;
+    }
+    btn.disabled = true; say('Sending…');
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 12000);
+    try {
+      const r = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST', signal: ctl.signal,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: 'Portfolio enquiry from ' + em, from_name: 'Portfolio contact form', email: em, message: body, botcheck: '' })
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || !j.success) throw new Error(j.message || 'status ' + r.status);
+      form.reset();
+      email.removeAttribute('aria-invalid'); msg.removeAttribute('aria-invalid');
+      say('Thanks! Your message is on its way. I will reply to ' + em + ' soon.', 'ok');
+    } catch (err) {
+      say('Sorry, that did not send. Please email me at ' + TO_EMAIL + ' instead.', 'err');
+    } finally { clearTimeout(t); btn.disabled = false; }
+  });
 })();
 </script>
 </body>
